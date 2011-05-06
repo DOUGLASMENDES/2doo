@@ -1,0 +1,162 @@
+body {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: smaller;
+}
+
+div.footer {
+    font-size: XX-small;
+    color: #999999;
+    text-align: center;
+    }
+    
+div.footer a {        
+    text-decoration: underline;
+    color: #999999;
+    }
+
+.m_t_d a {
+    text-decoration: none;
+    color: #000000;
+}
+
+.m_t_d a:hover {
+    text-decoration: underline;
+    color: #0000FF;
+}
+
+.m_t_d .red, .m_t_d .amber, .m_t_d .orange, .m_t_d .green{
+    background-color: #999999;
+}
+
+h1 {
+  color: #f00;
+  font-size: small;
+  margin-top:.3em;
+  margin-bottom:.3em;
+}
+
+h2 {
+  background-color: #aaaaaa;
+  font-size : small;
+  margin: .3em 0;
+  padding: .3em 0 .1em .3em;
+  border-top: 1px solid #777777;
+}
+
+h4.alert  {
+  border: 1px solid #666666; 
+   text-align: center;
+}
+
+h4.warning  {
+  border: 1px solid #ED2E38; 
+  background-color: #F6979C;
+  color: #000;
+}
+h4.error  {
+   color:#fff; 
+   background:#c00;
+}
+h4.notice {
+  border: 1px solid #007E00; 
+  background-color: #c2ffc2;
+  color: #007E00;
+}
+
+span.tag {
+  font-size: x-small;
+  background-color: #CCE7FF;
+  color: #000;
+  padding: 1px;
+  margin-right: 2px;
+}
+
+span.r {
+    font-size: XX-small;
+    color: #777777;
+}
+
+span.prj, span.ctx{
+    font-size: X-small;    
+}
+/*   Draw attention to some text 
+    Same format as traffic lights */
+.red {
+      color: #fff;
+      background: #f00;
+      padding: 1px;
+      font-size: 1em;
+}
+      
+.amber {
+      color: #fff;
+      background: #ff6600;
+      padding: 1px;
+      font-size: 1em;
+}
+         
+.orange {
+      color: #fff;
+      background: #FFA500;
+      padding: 1px;
+      font-size: 1em;
+}
+
+.green {
+      color: #fff;
+      background: #33cc00;
+      padding: 1px;
+      font-size: 1em;
+}
+      
+.grey {
+      color: #fff;
+      background: #999;
+      padding: 1px;
+      font-size: 1em;
+}
+      
+.count {
+      color: #fff;
+      background: #000;
+      font-size: medium;
+}
+
+.errors {
+      background: #FFC2C2;
+}
+
+ul.c li.star {
+list-style-type: circle;
+}
+
+ul.c {
+  padding: 0;
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+ul.c li {
+  padding: 0; 
+  margin: 0;
+}
+
+ul.c li span.r {
+  display: none;
+}
+
+span.r {
+  display:none;
+}
+
+.nav {
+  font-size: x-small;
+}
+
+#database_auth_form table td {
+  width:7em;
+}
+
+table.c {
+      margin-left: 5px;
+}

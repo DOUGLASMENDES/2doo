@@ -1,0 +1,17 @@
+development:
+  adapter: mysql
+  database: tracks
+  host: localhost
+  username: root
+  password: 123456
+
+test:
+    adapter: sqlite3
+    database: ":memory:"
+
+production:
+  adapter: mysql
+  database: th88352_2doo
+  host: localhost
+  username: th88352_admin
+  password: 2011cream682
