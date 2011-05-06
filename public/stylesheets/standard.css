@@ -2,8 +2,6 @@
 
 /* @override http://0.0.0.0:3000/stylesheets/standard.css?1180885851 */
 
-/* testando alteração
-
 body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td { 
     margin:0;
     padding:0;
@@ -33,11 +31,11 @@ abbr,acronym { border:0;
 }
 
 body {
-    font-family: "Lucida Grande", Verdana, Geneva, Arial, sans-serif;
+    font-family: Arial, "Lucida Grande", Verdana, Geneva, sans-serif;
     font-size: 80%;
     padding: 0px 10px;
     margin: 0px;
-    background: #eee;
+    background:#fff;
 }
 
 p {
@@ -47,7 +45,7 @@ p {
 }
 
 a, a:link, a:active, a:visited {
-    color: #cc3334;
+    color: #565656;
     text-decoration: none;
     padding-left: 1px;
     padding-right: 1px;
@@ -55,7 +53,7 @@ a, a:link, a:active, a:visited {
 
 a:hover {
     color: #fff;
-    background-color: #cc3334;
+    background-color: #565656;
 } 
 
 h1 {
@@ -72,10 +70,6 @@ h3 {
     font-size: 129%;
     font-weight: bold;
 }
-
--- fim teste alteração
-*/
-
 
 /* Rules for the icon links */
 
@@ -237,17 +231,17 @@ a.show_notes:hover, a.link_to_notes:hover {background-image: url(/images/notes_o
     font-weight: bold;
     margin: 0 10px 4px 10px;
     text-decoration: none;
-    color: #eee;
+    color: #fff;
 }
 
 #navlist a:link#current, #navlist a:visited#current, #navlist a:hover {
     border-bottom: 4px solid #CCC;
     padding-bottom: 2px;
     background: transparent;
-    color: #CCC;
+    color: #fff;
 }
 
-#navlist a:hover { color: #CCC; }
+#navlist a:hover { color: #fff; }
 
 #topbar {
     position: fixed;
@@ -256,7 +250,9 @@ a.show_notes:hover, a.link_to_notes:hover {background-image: url(/images/notes_o
     height: 68px;
     margin-bottom: 20px;
     clear: both;
-    background-color: #000;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#53a90e', endColorstr='#3a700f'); /* IE */
+	background: -webkit-gradient(linear, left top, left bottom, from(#53a90e), to(#3a700f)); /* webkit browsers */
+	background: -moz-linear-gradient(top,  #53a90e,  #3a700f);  /* Firefox 3.6+ */
     filter: alpha(opacity=75);
     -moz-opacity: .75;
     opacity: .75;
@@ -291,17 +287,19 @@ body.stats #topbar {
 
 .container {
     padding: 0px 5px 0px 5px; 
-    border: 1px solid #999;
+    border: 1px solid #e6d588;	 
     margin: 0px 0px 15px 0px;
-    background: #fff; 
+    background:#fff9e0;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
 
 .completed {
-    background: #eee; 	
+    background:#fff9e0; 	
 }
 
 .container h2 {
-    background: #ccc;
+    background:#ede7b3;
     padding: 5px;
     margin-top: 0px;
     margin-left: -5px;
@@ -674,8 +672,8 @@ li {
     background: #ccc;
     padding: 0 10px;
     border-top: 1px solid #999;
-    border-bottom: 1px solid #999;
-    position:relative;
+    border-bottom: 1px solid #999;    
+	position:relative;
 }
 
 /* Right align labels in forms */
@@ -709,7 +707,7 @@ div.buttons, div.buttons a, div.buttons a:hover {
 }
 
 div#list-active-projects, div#list-hidden-projects, div#list-completed-projects, div#list-contexts, div#projects-empty-nd {
-    clear:right;
+    clear:right;	
     border: 1px solid #999;
 }
 .project-state-group h2 {
@@ -730,12 +728,12 @@ div.alpha_sort, div.tasks_sort,span.sort_separator {
 }
 
 .container td {
-    border: none;
-    padding-bottom: 5px;
+    border: none;	
+    padding-bottom: 5px;	
 }
 
 .container form {
-    border: none;
+    border: none;	
 }
 
 div.project_description {
@@ -760,7 +758,7 @@ div.project_description {
 form {
     border: 1px solid #CCC;
     padding: 10px;
-    margin: 0px;
+    margin: 0px;	
 }
 .inline-form {
     border: none;
@@ -783,14 +781,19 @@ form {
     width: 13ex;
 }
 #todo_new_action_container, #project_new_project_container, #context_new_container, #recurring_new_container {
-    background: #ddd;
+    -moz-border-radius: 10px;
+	border-radius: 5px;
+	border: 1px solid #e6d588;
+	background: #ddd;
     width: 270px;
-    padding: 5px 10px;
-    background-color: #000;
+    padding: 5px 10px;    
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f8edb8', endColorstr='#e6d588'); /* IE */
+	background: -webkit-gradient(linear, left top, left bottom, from(#f8edb8), to(#e6d588)); /* webkit browsers */
+	background: -moz-linear-gradient(top,  #f8edb8,  #e6d588);  /* Firefox 3.6+ */
     filter: alpha(opacity=75);
     -moz-opacity: .75;
     opacity: .75;
-    color: #eee;
+    color: #000;
 }
 
 #recurring_new_container img {
@@ -892,7 +895,7 @@ input, select, textarea {
 }
 
 .feed {
-    font-family: verdana, sans-serif; 
+    font-family: arial, verdana, sans-serif; 
     font-size: 10px; 
     font-weight:bold; 
     text-decoration:none; 
@@ -1016,7 +1019,7 @@ ul#prefs {list-style-type: disc; margin-left: 15px;}
 }
 #feeds li {
     font-size:13px;
-    font-family: "Lucida Grande", Verdana, Geneva, Arial, sans-serif;
+    font-family: Arial, "Lucida Grande", Verdana, Geneva, sans-serif;
 }
 #feeds li h4 {
     margin-top: 12px;
@@ -1101,7 +1104,7 @@ http://particletree.com/features/rediscovering-the-button-element/ */
     border-top:1px solid #eee;
     border-left:1px solid #eee;
     
-    font-family:"Lucida Grande", Verdana, Geneva, Arial, sans-serif;
+    font-family: Arial, "Lucida Grande", Verdana, Geneva, sans-serif;
     font-size:80%;
     line-height:100%;
     text-decoration:none;
@@ -1134,7 +1137,7 @@ http://particletree.com/features/rediscovering-the-button-element/ */
 .widgets a:hover{
     background-color:#dff4ff;
     border:1px solid #c2e1ef;
-    color:#336699;
+    color:#336699;	
 }
 .widgets a:active{
     background-color:#6299c5;
@@ -1238,3 +1241,4 @@ body.integrations textarea {
 .defer-container a:hover {
   background-color: inherit;
 }
+
