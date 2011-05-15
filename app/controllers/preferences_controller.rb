@@ -1,13 +1,13 @@
 class PreferencesController < ApplicationController
     
   def index
-    @page_title = "TRACKS::Preferences"
-    @prefs = prefs
+    @page_title = t('preferences.page_title')
+    @prefs = current_user.prefs
   end
 
   def edit
-    @page_title = "TRACKS::Edit Preferences"
-    render :object => prefs
+    @page_title = t('preferences.page_title_edit')
+    @prefs = current_user.prefs
   end
   
   def update

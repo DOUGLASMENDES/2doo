@@ -1,10 +1,8 @@
-page['project_name_in_place_editor'].replace_html @project.name
-
+#TODO: is this dead code?
 page['default_project_name_id'].value = @project.name
 page['todo_project_name'].value = @project.name
 
-# renew project auto complete array
-page << "projectAutoCompleter.options.array = #{project_names_for_autocomplete}; projectAutoCompleter.changed = true" 
+page << "enable_rich_interaction();"
 
-status_message = "Name of project was changed"
+status_message = t('projects.status_project_name_changed')
 page.notify :notice, status_message, 5.0

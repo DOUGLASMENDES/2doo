@@ -2,19 +2,21 @@ class RecurringTodosController < ApplicationController
 
   helper :todos, :recurring_todos
 
-  append_before_filter :init, :only => [:index, :new, :edit]
+  append_before_filter :init, :only => [:index, :new, :edit, :create]
   append_before_filter :get_recurring_todo_from_param, :only => [:destroy, :toggle_check, :toggle_star, :edit, :update]
 
   def index
-    find_and_inactivate
+    @page_title = t('todos.recurring_actions_title')
 
+    find_and_inactivate
     @recurring_todos = current_user.recurring_todos.active
     @completed_recurring_todos = current_user.recurring_todos.completed
+
     @no_recurring_todos = @recurring_todos.size == 0
     @no_completed_recurring_todos = @completed_recurring_todos.size == 0
-    @count = @recurring_todos.size 
-    
-    @page_title = "TRACKS::Recurring Actions"
+    @count = @recurring_todos.size
+
+    @new_recurring_todo = RecurringTodo.new
   end
 
   def new
@@ -31,7 +33,7 @@ class RecurringTodosController < ApplicationController
 
   def update
     # TODO: write tests for updating
-    @recurring_todo.tag_with(params[:tag_list]) if params[:tag_list]
+    @recurring_todo.tag_with(params[:edit_recurring_todo_tag_list]) if params[:edit_recurring_todo_tag_list]
     @original_item_context_id = @recurring_todo.context_id
     @original_item_project_id = @recurring_todo.project_id
 
@@ -103,23 +105,24 @@ class RecurringTodosController < ApplicationController
       @recurring_todo.context_id = context.id
     end
 
-    @recurring_saved = @recurring_todo.save
-    unless (@recurring_saved == false) || p.tag_list.blank?
+    @saved = @recurring_todo.save
+    unless (@saved == false) || p.tag_list.blank?
       @recurring_todo.tag_with(p.tag_list)
       @recurring_todo.tags.reload
     end
 
-    if @recurring_saved
-      @message = "The recurring todo was saved"
+    if @saved
+      @status_message = t('todos.recurring_action_saved')
       @todo_saved = create_todo_from_recurring_todo(@recurring_todo).nil? == false
       if @todo_saved
-        @message += " / created a new todo"
+        @status_message += " / " + t('todos.new_related_todo_created_short')
       else
-        @message += " / did not create todo"
+        @status_message += " / " + t('todos.new_related_todo_not_created_short')
       end
-      @count = current_user.recurring_todos.active.count
+      @down_count = current_user.recurring_todos.active.count
+      @new_recurring_todo = RecurringTodo.new
     else
-      @message = "Error saving recurring todo"
+      @status_message = t('todos.error_saving_recurring')
     end    
     
     respond_to do |format|
@@ -139,16 +142,19 @@ class RecurringTodosController < ApplicationController
     
     # delete the recurring todo
     @saved = @recurring_todo.destroy
-    @remaining = current_user.recurring_todos.count
+
+    # count remaining recurring todos
+    @active_remaining = current_user.recurring_todos.active.count
+    @completed_remaining = current_user.recurring_todos.completed.count
     
     respond_to do |format|
       
       format.html do
         if @saved
-          notify :notice, "Successfully deleted recurring action", 2.0
+          notify :notice, t('todos.recurring_deleted_success'), 2.0
           redirect_to :action => 'index'
         else
-          notify :error, "Failed to delete the recurring action", 2.0
+          notify :error, t('todos.error_deleting_recurring', :description => @recurring_todo.description), 2.0
           redirect_to :action => 'index'
         end
       end
@@ -162,11 +168,12 @@ class RecurringTodosController < ApplicationController
   def toggle_check
     @saved = @recurring_todo.toggle_completion!
 
-    @count = current_user.recurring_todos.active.count
-    @remaining = @count
+    @down_count = current_user.recurring_todos.active.count
+    @active_remaining = @down_count
+    @completed_remaining = 0
 
     if @recurring_todo.active?
-      @remaining = current_user.recurring_todos.completed.count
+      @completed_remaining = current_user.recurring_todos.completed.count
       
       # from completed back to active -> check if there is an active todo
       # current_user.todos.count(:all, {:conditions => ["state = ? AND recurring_todo_id = ?", 'active',params[:id]]})
@@ -243,15 +250,20 @@ class RecurringTodosController < ApplicationController
 
   private
   
-  def init 
-    @days_of_week = [ ['Sunday',0], ['Monday',1], ['Tuesday', 2], ['Wednesday',3], ['Thursday',4], ['Friday',5], ['Saturday',6]]
-    @months_of_year = [ 
-      ['January',1], ['Februari',2], ['March', 3], ['April',4], ['May',5], ['June',6], 
-      ['July',7], ['August',8], ['September',9], ['October', 10], ['November', 11], ['December',12]]
-    @xth_day = [['first',1],['second',2],['third',3],['fourth',4],['last',5]]    
+  def init
+    @days_of_week = []
+    0.upto 6 do |i| 
+      @days_of_week << [t('date.day_names')[i], i]
+    end
+
+    @months_of_year = []
+    1.upto 12 do |i|
+      @months_of_year << [t('date.month_names')[i], i]
+    end
+
+    @xth_day = [[t('common.first'),1],[t('common.second'),2],[t('common.third'),3],[t('common.fourth'),4],[t('common.last'),5]]
     @projects = current_user.projects.find(:all, :include => [:default_context])
     @contexts = current_user.contexts.find(:all)
-    @default_project_context_name_map = build_default_project_context_name_map(@projects).to_json
   end
   
   def get_recurring_todo_from_param

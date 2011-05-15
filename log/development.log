@@ -8122,3 +8122,199 @@ Processing TodosController#check_deferred to js (for 127.0.0.1 at 2011-02-25 00:
   [4;36;1mTodo Load (1.2ms)[0m   [0;1mSELECT * FROM `todos` WHERE (`todos`.user_id = 1 AND (state = 'deferred') AND (show_from <= '2011-02-25 03:13:48')) ORDER BY show_from ASC, todos.created_at DESC[0m
 Rendering todos/check_deferred
 Completed in 59ms (View: 22, DB: 33) | 200 OK [http://localhost/todos/check_deferred.js]
+** has_many_polymorphs: rails environment detected
+** has_many_polymorphs: loaded ok
+** has_many_polymorphs: autoload hook invoked
+** has_many_polymorphs: preloading parent model Tag
+** has_many_polymorphs: associating Tag.taggables
+  [4;36;1mSQL (45.7ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+DEPRECATION WARNING: Kernel#returning has been deprecated in favor of Object#tap. (called from build_table_aliases at /home/architect/Desktop/Projetos/2doo/vendor/gems/has_many_polymorphs-2.13/lib/has_many_polymorphs/class_methods.rb:358)
+  [4;35;1mRecurringTodo Columns (30.5ms)[0m   [0mSHOW FIELDS FROM `recurring_todos`[0m
+  [4;36;1mTagging Columns (2.2ms)[0m   [0;1mSHOW FIELDS FROM `taggings`[0m
+  [4;35;1mTodo Columns (2.0ms)[0m   [0mSHOW FIELDS FROM `todos`[0m
+DEPRECATION WARNING: Kernel#returning has been deprecated in favor of Object#tap. (called from create_has_many_polymorphs_reflection at /home/architect/Desktop/Projetos/2doo/vendor/gems/has_many_polymorphs-2.13/lib/has_many_polymorphs/class_methods.rb:343)
+** has_many_polymorphs: preloading parent model Tagging
+** has_many_polymorphs: autoload hook invoked
+** has_many_polymorphs: preloading parent model Tag
+** has_many_polymorphs: preloading parent model Tagging
+** has_many_polymorphs: autoload hook invoked
+** has_many_polymorphs: preloading parent model Tag
+** has_many_polymorphs: preloading parent model Tagging
+  [4;36;1mSQL (0.2ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+
+
+Processing TodosController#index (for 127.0.0.1 at 2011-05-14 22:00:45) [GET]
+  [4;35;1mUser Columns (1.6ms)[0m   [0mSHOW FIELDS FROM `users`[0m
+  [4;36;1mUser Load (0.7ms)[0m   [0;1mSELECT * FROM `users` WHERE (`users`.`id` = 1) [0m
+  [4;35;1mPreference Load (0.3ms)[0m   [0mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+  [4;36;1mPreference Columns (2.6ms)[0m   [0;1mSHOW FIELDS FROM `preferences`[0m
+Selected 'en' as locale
+  [4;35;1mTodo Load (1.8ms)[0m   [0mSELECT * FROM `todos` WHERE (`todos`.user_id = 1 AND (state = 'deferred') AND (show_from <= '2011-05-15 01:00:45')) ORDER BY show_from ASC, todos.created_at DESC[0m
+  [4;36;1mSQL (0.5ms)[0m   [0;1mSELECT count(*) AS count_all, project_id AS project_id FROM `todos` WHERE ((`todos`.`state` = 'active') AND (`todos`.user_id = 1)) GROUP BY project_id [0m
+  [4;35;1mSQL (0.4ms)[0m   [0mSELECT count(*) AS count_all, context_id AS context_id FROM `todos` WHERE ((`todos`.`state` = 'active') AND (`todos`.user_id = 1)) GROUP BY context_id [0m
+  [4;36;1mSQL (1.5ms)[0m   [0;1mSELECT count(*) AS count_all, project_id AS project_id FROM `todos` WHERE (state = 'project_hidden' or state = 'active') AND (`todos`.user_id = 1) GROUP BY project_id [0m
+  [4;35;1mTodo Load (42.8ms)[0m   [0mSELECT * FROM `todos` WHERE (`todos`.user_id = 1) AND (todos.state = 'active') ORDER BY todos.completed_at DESC, todos.created_at DESC[0m
+  [4;36;1mProject Columns (110.2ms)[0m   [0;1mSHOW FIELDS FROM `projects`[0m
+  [4;35;1mProject Load (1.1ms)[0m   [0mSELECT * FROM `projects` WHERE (`projects`.`id` IN (1,3,4)) [0m
+  [4;36;1mContext Columns (20.7ms)[0m   [0;1mSHOW FIELDS FROM `contexts`[0m
+  [4;35;1mContext Load (7.1ms)[0m   [0mSELECT * FROM `contexts` WHERE (`contexts`.`id` IN (2,3,4)) [0m
+  [4;36;1mTagging Load (0.5ms)[0m   [0;1mSELECT `taggings`.* FROM `taggings` WHERE (`taggings`.`taggable_id` IN (4,3,2,1) and `taggings`.`taggable_type` = 'Todo') [0m
+  [4;35;1mTag Columns (6.0ms)[0m   [0mSHOW FIELDS FROM `tags`[0m
+  [4;36;1mTag Load (0.5ms)[0m   [0;1mSELECT * FROM `tags` WHERE (`tags`.`id` IN (6,7,1,2,3,4,5)) [0m
+  [4;35;1mDependency Columns (4.6ms)[0m   [0mSHOW FIELDS FROM `dependencies`[0m
+  [4;36;1mDependency Load Including Associations (0.4ms)[0m   [0;1mSELECT `dependencies`.`id` AS t0_r0, `dependencies`.`successor_id` AS t0_r1, `dependencies`.`predecessor_id` AS t0_r2, `dependencies`.`relationship_type` AS t0_r3, `todos`.`id` AS t1_r0, `todos`.`context_id` AS t1_r1, `todos`.`project_id` AS t1_r2, `todos`.`description` AS t1_r3, `todos`.`notes` AS t1_r4, `todos`.`created_at` AS t1_r5, `todos`.`due` AS t1_r6, `todos`.`completed_at` AS t1_r7, `todos`.`user_id` AS t1_r8, `todos`.`show_from` AS t1_r9, `todos`.`state` AS t1_r10, `todos`.`recurring_todo_id` AS t1_r11, `todos`.`updated_at` AS t1_r12 FROM `dependencies` LEFT OUTER JOIN `todos` ON `todos`.id = `dependencies`.successor_id WHERE (`dependencies`.predecessor_id IN (4,3,2,1) AND (todos.state = 'pending')) [0m
+  [4;35;1mTodo Load Including Associations (2.3ms)[0m   [0mSELECT `todos`.`id` AS t0_r0, `todos`.`context_id` AS t0_r1, `todos`.`project_id` AS t0_r2, `todos`.`description` AS t0_r3, `todos`.`notes` AS t0_r4, `todos`.`created_at` AS t0_r5, `todos`.`due` AS t0_r6, `todos`.`completed_at` AS t0_r7, `todos`.`user_id` AS t0_r8, `todos`.`show_from` AS t0_r9, `todos`.`state` AS t0_r10, `todos`.`recurring_todo_id` AS t0_r11, `todos`.`updated_at` AS t0_r12, `projects`.`id` AS t1_r0, `projects`.`name` AS t1_r1, `projects`.`position` AS t1_r2, `projects`.`user_id` AS t1_r3, `projects`.`description` AS t1_r4, `projects`.`state` AS t1_r5, `projects`.`created_at` AS t1_r6, `projects`.`updated_at` AS t1_r7, `projects`.`default_context_id` AS t1_r8, `projects`.`completed_at` AS t1_r9, `projects`.`default_tags` AS t1_r10, `contexts`.`id` AS t2_r0, `contexts`.`name` AS t2_r1, `contexts`.`position` AS t2_r2, `contexts`.`hide` AS t2_r3, `contexts`.`user_id` AS t2_r4, `contexts`.`created_at` AS t2_r5, `contexts`.`updated_at` AS t2_r6, `tags`.`id` AS t3_r0, `tags`.`name` AS t3_r1, `tags`.`created_at` AS t3_r2, `tags`.`updated_at` AS t3_r3, `pending_successors_todos`.`id` AS t4_r0, `pending_successors_todos`.`context_id` AS t4_r1, `pending_successors_todos`.`project_id` AS t4_r2, `pending_successors_todos`.`description` AS t4_r3, `pending_successors_todos`.`notes` AS t4_r4, `pending_successors_todos`.`created_at` AS t4_r5, `pending_successors_todos`.`due` AS t4_r6, `pending_successors_todos`.`completed_at` AS t4_r7, `pending_successors_todos`.`user_id` AS t4_r8, `pending_successors_todos`.`show_from` AS t4_r9, `pending_successors_todos`.`state` AS t4_r10, `pending_successors_todos`.`recurring_todo_id` AS t4_r11, `pending_successors_todos`.`updated_at` AS t4_r12, `recurring_todos`.`id` AS t5_r0, `recurring_todos`.`user_id` AS t5_r1, `recurring_todos`.`context_id` AS t5_r2, `recurring_todos`.`project_id` AS t5_r3, `recurring_todos`.`description` AS t5_r4, `recurring_todos`.`notes` AS t5_r5, `recurring_todos`.`state` AS t5_r6, `recurring_todos`.`start_from` AS t5_r7, `recurring_todos`.`ends_on` AS t5_r8, `recurring_todos`.`end_date` AS t5_r9, `recurring_todos`.`number_of_occurences` AS t5_r10, `recurring_todos`.`occurences_count` AS t5_r11, `recurring_todos`.`target` AS t5_r12, `recurring_todos`.`show_from_delta` AS t5_r13, `recurring_todos`.`recurring_period` AS t5_r14, `recurring_todos`.`recurrence_selector` AS t5_r15, `recurring_todos`.`every_other1` AS t5_r16, `recurring_todos`.`every_other2` AS t5_r17, `recurring_todos`.`every_other3` AS t5_r18, `recurring_todos`.`every_day` AS t5_r19, `recurring_todos`.`only_work_days` AS t5_r20, `recurring_todos`.`every_count` AS t5_r21, `recurring_todos`.`weekday` AS t5_r22, `recurring_todos`.`completed_at` AS t5_r23, `recurring_todos`.`created_at` AS t5_r24, `recurring_todos`.`updated_at` AS t5_r25, `recurring_todos`.`show_always` AS t5_r26 FROM `todos` LEFT OUTER JOIN `projects` ON `projects`.id = `todos`.project_id LEFT OUTER JOIN `contexts` ON `contexts`.id = `todos`.context_id LEFT OUTER JOIN `taggings` ON (`todos`.`id` = `taggings`.`taggable_id` AND `taggings`.`taggable_type` = 'Todo') LEFT OUTER JOIN `tags` ON (`tags`.`id` = `taggings`.`tag_id`) LEFT OUTER JOIN `dependencies` ON (`todos`.`id` = `dependencies`.`predecessor_id`) LEFT OUTER JOIN `todos` pending_successors_todos ON (`pending_successors_todos`.`id` = `dependencies`.`successor_id`) AND todos.state = 'pending' LEFT OUTER JOIN `recurring_todos` ON `recurring_todos`.id = `todos`.recurring_todo_id WHERE (`todos`.user_id = 1 AND (contexts.hide = 0 AND (projects.state = 'active' OR todos.project_id IS NULL))) AND (todos.state = 'active') ORDER BY todos.due IS NULL, todos.due ASC, todos.created_at ASC, todos.completed_at DESC, todos.created_at DESC[0m
+  [4;36;1mProject Load (2.1ms)[0m   [0;1mSELECT * FROM `projects` WHERE (`projects`.user_id = 1) ORDER BY projects.position ASC[0m
+  [4;35;1mContext Load (2.1ms)[0m   [0mSELECT * FROM `contexts` WHERE (`contexts`.`id` IN (3,4)) [0m
+  [4;36;1mContext Load (2.0ms)[0m   [0;1mSELECT * FROM `contexts` WHERE (`contexts`.user_id = 1) ORDER BY position ASC[0m
+  [4;35;1mTodo Load (3.9ms)[0m   [0mSELECT * FROM `todos` WHERE (`todos`.user_id = 1 AND (todos.state = 'completed' AND NOT(todos.completed_at IS NULL))) ORDER BY todos.completed_at DESC LIMIT 5[0m
+  [4;36;1mSQL (1.9ms)[0m   [0;1mSELECT count(*) AS count_all FROM `todos` INNER JOIN `contexts` ON `contexts`.id = `todos`.context_id WHERE (((NOT(todos.state = 'project_hidden' OR (contexts.hide = 1 AND (todos.state = 'active' OR todos.state = 'deferred' OR todos.state = 'pending')))) AND (`todos`.`state` = 'active')) AND (`todos`.user_id = 1)) [0m
+Rendering template within layouts/standard
+Rendering todos/index
+  [4;35;1mContext Load (0.3ms)[0m   [0mSELECT * FROM `contexts` WHERE (`contexts`.user_id = 1) AND (`contexts`.`hide` = 0) ORDER BY position ASC[0m
+Rendered contexts/_context (9.7ms)
+  [4;36;1mUser Load (1.6ms)[0m   [0;1mSELECT * FROM `users` WHERE (`users`.`id` = 1) [0m
+  [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+Rendered todos/_todo (65.1ms)
+Rendered contexts/_context (79.7ms)
+  [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `users` WHERE (`users`.`id` = 1) [0m
+  [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+Rendered todos/_todo (38.2ms)
+  [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `users` WHERE (`users`.`id` = 1) [0m
+  [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+Rendered todos/_todo (43.2ms)
+Rendered contexts/_context (85.2ms)
+  [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `users` WHERE (`users`.`id` = 1) [0m
+  [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+Rendered todos/_todo (35.9ms)
+Rendered contexts/_context (38.2ms)
+Rendered todos/_completed (3.9ms)
+Rendered todos/_new_todo_form (31.9ms)
+Rendered todos/_new_multi_todo_form (17.1ms)
+Rendered shared/_add_new_item_form (127.8ms)
+  [4;36;1mProject Load (2.4ms)[0m   [0;1mSELECT * FROM `projects` WHERE (`projects`.user_id = 1) AND (`projects`.`state` = 'active') ORDER BY projects.position ASC[0m
+  [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `contexts` WHERE (`contexts`.user_id = 1) AND (`contexts`.`hide` = 0) ORDER BY position ASC[0m
+  [4;36;1mProject Load (0.5ms)[0m   [0;1mSELECT * FROM `projects` WHERE (`projects`.user_id = 1) AND (`projects`.`state` = 'hidden') ORDER BY projects.position ASC[0m
+  [4;35;1mProject Load (0.3ms)[0m   [0mSELECT * FROM `projects` WHERE (`projects`.user_id = 1) AND (`projects`.`state` = 'completed') ORDER BY projects.position ASC[0m
+  [4;36;1mContext Load (0.4ms)[0m   [0;1mSELECT * FROM `contexts` WHERE (`contexts`.user_id = 1) AND (`contexts`.`hide` = 1) ORDER BY position ASC[0m
+  [4;35;1mProject Load (1.8ms)[0m   [0mSELECT * FROM `projects` WHERE (`projects`.user_id = 1 AND (default_tags != '')) AND (NOT(state = 'completed')) ORDER BY projects.position ASC[0m
+Rendered shared/_flash (2.6ms)
+Rendered shared/_footer (4.8ms)
+Completed in 2481ms (View: 1248, DB: 333) | 200 OK [http://0.0.0.0/]
+** has_many_polymorphs: autoload hook invoked
+** has_many_polymorphs: preloading parent model Tag
+** has_many_polymorphs: associating Tag.taggables
+  [4;36;1mSQL (0.5ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+DEPRECATION WARNING: Kernel#returning has been deprecated in favor of Object#tap. (called from build_table_aliases at /home/architect/Desktop/Projetos/2doo/vendor/gems/has_many_polymorphs-2.13/lib/has_many_polymorphs/class_methods.rb:358)
+  [4;35;1mRecurringTodo Columns (2.7ms)[0m   [0mSHOW FIELDS FROM `recurring_todos`[0m
+  [4;36;1mTagging Columns (1.4ms)[0m   [0;1mSHOW FIELDS FROM `taggings`[0m
+  [4;35;1mTodo Columns (5.5ms)[0m   [0mSHOW FIELDS FROM `todos`[0m
+DEPRECATION WARNING: Kernel#returning has been deprecated in favor of Object#tap. (called from create_has_many_polymorphs_reflection at /home/architect/Desktop/Projetos/2doo/vendor/gems/has_many_polymorphs-2.13/lib/has_many_polymorphs/class_methods.rb:343)
+** has_many_polymorphs: preloading parent model Tagging
+
+
+Processing PreferencesController#index (for 127.0.0.1 at 2011-05-14 22:01:28) [GET]
+  [4;36;1mUser Columns (2.1ms)[0m   [0;1mSHOW FIELDS FROM `users`[0m
+  [4;35;1mUser Load (0.9ms)[0m   [0mSELECT * FROM `users` WHERE (`users`.`remember_token` = 'c1eb4408e12f5e50ac2d4d8b121f9e51edc12cf2') LIMIT 1[0m
+  [4;36;1mSQL (0.2ms)[0m   [0;1mBEGIN[0m
+  [4;35;1mUser Update (1.0ms)[0m   [0mUPDATE `users` SET `remember_token_expires_at` = '2011-05-29 01:01:28' WHERE `id` = 1[0m
+  [4;36;1mSQL (6.5ms)[0m   [0;1mCOMMIT[0m
+  [4;35;1mPreference Load (0.3ms)[0m   [0mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+  [4;36;1mPreference Columns (2.0ms)[0m   [0;1mSHOW FIELDS FROM `preferences`[0m
+Selected 'en' as locale
+Rendering template within layouts/standard
+Rendering preferences/index
+Rendered shared/_flash (0.1ms)
+Rendered shared/_footer (1.1ms)
+Completed in 339ms (View: 236, DB: 25) | 200 OK [http://0.0.0.0/preferences]
+** has_many_polymorphs: autoload hook invoked
+** has_many_polymorphs: preloading parent model Tag
+** has_many_polymorphs: associating Tag.taggables
+  [4;35;1mSQL (0.3ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
+DEPRECATION WARNING: Kernel#returning has been deprecated in favor of Object#tap. (called from build_table_aliases at /home/architect/Desktop/Projetos/2doo/vendor/gems/has_many_polymorphs-2.13/lib/has_many_polymorphs/class_methods.rb:358)
+  [4;36;1mRecurringTodo Columns (3.0ms)[0m   [0;1mSHOW FIELDS FROM `recurring_todos`[0m
+  [4;35;1mTagging Columns (1.4ms)[0m   [0mSHOW FIELDS FROM `taggings`[0m
+  [4;36;1mTodo Columns (2.1ms)[0m   [0;1mSHOW FIELDS FROM `todos`[0m
+DEPRECATION WARNING: Kernel#returning has been deprecated in favor of Object#tap. (called from create_has_many_polymorphs_reflection at /home/architect/Desktop/Projetos/2doo/vendor/gems/has_many_polymorphs-2.13/lib/has_many_polymorphs/class_methods.rb:343)
+** has_many_polymorphs: preloading parent model Tagging
+
+
+Processing TodosController#index (for 127.0.0.1 at 2011-05-14 22:01:52) [GET]
+  [4;35;1mUser Columns (1.9ms)[0m   [0mSHOW FIELDS FROM `users`[0m
+  [4;36;1mUser Load (0.6ms)[0m   [0;1mSELECT * FROM `users` WHERE (`users`.`id` = 1) [0m
+  [4;35;1mPreference Load (1.3ms)[0m   [0mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+  [4;36;1mPreference Columns (4.4ms)[0m   [0;1mSHOW FIELDS FROM `preferences`[0m
+Selected 'en' as locale
+  [4;35;1mTodo Load (1.3ms)[0m   [0mSELECT * FROM `todos` WHERE (`todos`.user_id = 1 AND (state = 'deferred') AND (show_from <= '2011-05-15 01:01:52')) ORDER BY show_from ASC, todos.created_at DESC[0m
+  [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT count(*) AS count_all, project_id AS project_id FROM `todos` WHERE ((`todos`.`state` = 'active') AND (`todos`.user_id = 1)) GROUP BY project_id [0m
+  [4;35;1mSQL (0.4ms)[0m   [0mSELECT count(*) AS count_all, context_id AS context_id FROM `todos` WHERE ((`todos`.`state` = 'active') AND (`todos`.user_id = 1)) GROUP BY context_id [0m
+  [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT count(*) AS count_all, project_id AS project_id FROM `todos` WHERE (state = 'project_hidden' or state = 'active') AND (`todos`.user_id = 1) GROUP BY project_id [0m
+  [4;35;1mTodo Load (0.6ms)[0m   [0mSELECT * FROM `todos` WHERE (`todos`.user_id = 1) AND (todos.state = 'active') ORDER BY todos.completed_at DESC, todos.created_at DESC[0m
+  [4;36;1mProject Columns (3.6ms)[0m   [0;1mSHOW FIELDS FROM `projects`[0m
+  [4;35;1mProject Load (2.2ms)[0m   [0mSELECT * FROM `projects` WHERE (`projects`.`id` IN (1,3,4)) [0m
+  [4;36;1mContext Columns (1.5ms)[0m   [0;1mSHOW FIELDS FROM `contexts`[0m
+  [4;35;1mContext Load (0.3ms)[0m   [0mSELECT * FROM `contexts` WHERE (`contexts`.`id` IN (2,3,4)) [0m
+  [4;36;1mTagging Load (0.3ms)[0m   [0;1mSELECT `taggings`.* FROM `taggings` WHERE (`taggings`.`taggable_id` IN (4,3,2,1) and `taggings`.`taggable_type` = 'Todo') [0m
+  [4;35;1mTag Columns (1.7ms)[0m   [0mSHOW FIELDS FROM `tags`[0m
+  [4;36;1mTag Load (0.3ms)[0m   [0;1mSELECT * FROM `tags` WHERE (`tags`.`id` IN (6,7,1,2,3,4,5)) [0m
+  [4;35;1mDependency Columns (1.4ms)[0m   [0mSHOW FIELDS FROM `dependencies`[0m
+  [4;36;1mDependency Load Including Associations (0.3ms)[0m   [0;1mSELECT `dependencies`.`id` AS t0_r0, `dependencies`.`successor_id` AS t0_r1, `dependencies`.`predecessor_id` AS t0_r2, `dependencies`.`relationship_type` AS t0_r3, `todos`.`id` AS t1_r0, `todos`.`context_id` AS t1_r1, `todos`.`project_id` AS t1_r2, `todos`.`description` AS t1_r3, `todos`.`notes` AS t1_r4, `todos`.`created_at` AS t1_r5, `todos`.`due` AS t1_r6, `todos`.`completed_at` AS t1_r7, `todos`.`user_id` AS t1_r8, `todos`.`show_from` AS t1_r9, `todos`.`state` AS t1_r10, `todos`.`recurring_todo_id` AS t1_r11, `todos`.`updated_at` AS t1_r12 FROM `dependencies` LEFT OUTER JOIN `todos` ON `todos`.id = `dependencies`.successor_id WHERE (`dependencies`.predecessor_id IN (4,3,2,1) AND (todos.state = 'pending')) [0m
+  [4;35;1mTodo Load Including Associations (0.4ms)[0m   [0mSELECT `todos`.`id` AS t0_r0, `todos`.`context_id` AS t0_r1, `todos`.`project_id` AS t0_r2, `todos`.`description` AS t0_r3, `todos`.`notes` AS t0_r4, `todos`.`created_at` AS t0_r5, `todos`.`due` AS t0_r6, `todos`.`completed_at` AS t0_r7, `todos`.`user_id` AS t0_r8, `todos`.`show_from` AS t0_r9, `todos`.`state` AS t0_r10, `todos`.`recurring_todo_id` AS t0_r11, `todos`.`updated_at` AS t0_r12, `projects`.`id` AS t1_r0, `projects`.`name` AS t1_r1, `projects`.`position` AS t1_r2, `projects`.`user_id` AS t1_r3, `projects`.`description` AS t1_r4, `projects`.`state` AS t1_r5, `projects`.`created_at` AS t1_r6, `projects`.`updated_at` AS t1_r7, `projects`.`default_context_id` AS t1_r8, `projects`.`completed_at` AS t1_r9, `projects`.`default_tags` AS t1_r10, `contexts`.`id` AS t2_r0, `contexts`.`name` AS t2_r1, `contexts`.`position` AS t2_r2, `contexts`.`hide` AS t2_r3, `contexts`.`user_id` AS t2_r4, `contexts`.`created_at` AS t2_r5, `contexts`.`updated_at` AS t2_r6, `tags`.`id` AS t3_r0, `tags`.`name` AS t3_r1, `tags`.`created_at` AS t3_r2, `tags`.`updated_at` AS t3_r3, `pending_successors_todos`.`id` AS t4_r0, `pending_successors_todos`.`context_id` AS t4_r1, `pending_successors_todos`.`project_id` AS t4_r2, `pending_successors_todos`.`description` AS t4_r3, `pending_successors_todos`.`notes` AS t4_r4, `pending_successors_todos`.`created_at` AS t4_r5, `pending_successors_todos`.`due` AS t4_r6, `pending_successors_todos`.`completed_at` AS t4_r7, `pending_successors_todos`.`user_id` AS t4_r8, `pending_successors_todos`.`show_from` AS t4_r9, `pending_successors_todos`.`state` AS t4_r10, `pending_successors_todos`.`recurring_todo_id` AS t4_r11, `pending_successors_todos`.`updated_at` AS t4_r12, `recurring_todos`.`id` AS t5_r0, `recurring_todos`.`user_id` AS t5_r1, `recurring_todos`.`context_id` AS t5_r2, `recurring_todos`.`project_id` AS t5_r3, `recurring_todos`.`description` AS t5_r4, `recurring_todos`.`notes` AS t5_r5, `recurring_todos`.`state` AS t5_r6, `recurring_todos`.`start_from` AS t5_r7, `recurring_todos`.`ends_on` AS t5_r8, `recurring_todos`.`end_date` AS t5_r9, `recurring_todos`.`number_of_occurences` AS t5_r10, `recurring_todos`.`occurences_count` AS t5_r11, `recurring_todos`.`target` AS t5_r12, `recurring_todos`.`show_from_delta` AS t5_r13, `recurring_todos`.`recurring_period` AS t5_r14, `recurring_todos`.`recurrence_selector` AS t5_r15, `recurring_todos`.`every_other1` AS t5_r16, `recurring_todos`.`every_other2` AS t5_r17, `recurring_todos`.`every_other3` AS t5_r18, `recurring_todos`.`every_day` AS t5_r19, `recurring_todos`.`only_work_days` AS t5_r20, `recurring_todos`.`every_count` AS t5_r21, `recurring_todos`.`weekday` AS t5_r22, `recurring_todos`.`completed_at` AS t5_r23, `recurring_todos`.`created_at` AS t5_r24, `recurring_todos`.`updated_at` AS t5_r25, `recurring_todos`.`show_always` AS t5_r26 FROM `todos` LEFT OUTER JOIN `projects` ON `projects`.id = `todos`.project_id LEFT OUTER JOIN `contexts` ON `contexts`.id = `todos`.context_id LEFT OUTER JOIN `taggings` ON (`todos`.`id` = `taggings`.`taggable_id` AND `taggings`.`taggable_type` = 'Todo') LEFT OUTER JOIN `tags` ON (`tags`.`id` = `taggings`.`tag_id`) LEFT OUTER JOIN `dependencies` ON (`todos`.`id` = `dependencies`.`predecessor_id`) LEFT OUTER JOIN `todos` pending_successors_todos ON (`pending_successors_todos`.`id` = `dependencies`.`successor_id`) AND todos.state = 'pending' LEFT OUTER JOIN `recurring_todos` ON `recurring_todos`.id = `todos`.recurring_todo_id WHERE (`todos`.user_id = 1 AND (contexts.hide = 0 AND (projects.state = 'active' OR todos.project_id IS NULL))) AND (todos.state = 'active') ORDER BY todos.due IS NULL, todos.due ASC, todos.created_at ASC, todos.completed_at DESC, todos.created_at DESC[0m
+  [4;36;1mProject Load (0.3ms)[0m   [0;1mSELECT * FROM `projects` WHERE (`projects`.user_id = 1) ORDER BY projects.position ASC[0m
+  [4;35;1mContext Load (3.5ms)[0m   [0mSELECT * FROM `contexts` WHERE (`contexts`.`id` IN (3,4)) [0m
+  [4;36;1mContext Load (0.2ms)[0m   [0;1mSELECT * FROM `contexts` WHERE (`contexts`.user_id = 1) ORDER BY position ASC[0m
+  [4;35;1mTodo Load (0.3ms)[0m   [0mSELECT * FROM `todos` WHERE (`todos`.user_id = 1 AND (todos.state = 'completed' AND NOT(todos.completed_at IS NULL))) ORDER BY todos.completed_at DESC LIMIT 5[0m
+  [4;36;1mSQL (0.3ms)[0m   [0;1mSELECT count(*) AS count_all FROM `todos` INNER JOIN `contexts` ON `contexts`.id = `todos`.context_id WHERE (((NOT(todos.state = 'project_hidden' OR (contexts.hide = 1 AND (todos.state = 'active' OR todos.state = 'deferred' OR todos.state = 'pending')))) AND (`todos`.`state` = 'active')) AND (`todos`.user_id = 1)) [0m
+Rendering template within layouts/standard
+Rendering todos/index
+  [4;35;1mContext Load (0.2ms)[0m   [0mSELECT * FROM `contexts` WHERE (`contexts`.user_id = 1) AND (`contexts`.`hide` = 0) ORDER BY position ASC[0m
+Rendered contexts/_context (9.7ms)
+  [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `users` WHERE (`users`.`id` = 1) [0m
+  [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+Rendered todos/_todo (67.0ms)
+Rendered contexts/_context (69.8ms)
+  [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `users` WHERE (`users`.`id` = 1) [0m
+  [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+Rendered todos/_todo (35.0ms)
+  [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `users` WHERE (`users`.`id` = 1) [0m
+  [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+Rendered todos/_todo (34.5ms)
+Rendered contexts/_context (74.8ms)
+  [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `users` WHERE (`users`.`id` = 1) [0m
+  [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+Rendered todos/_todo (38.1ms)
+Rendered contexts/_context (43.1ms)
+Rendered todos/_completed (1.6ms)
+Rendered todos/_new_todo_form (10.5ms)
+Rendered todos/_new_multi_todo_form (3.9ms)
+Rendered shared/_add_new_item_form (16.6ms)
+  [4;36;1mProject Load (2.3ms)[0m   [0;1mSELECT * FROM `projects` WHERE (`projects`.user_id = 1) AND (`projects`.`state` = 'active') ORDER BY projects.position ASC[0m
+  [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `contexts` WHERE (`contexts`.user_id = 1) AND (`contexts`.`hide` = 0) ORDER BY position ASC[0m
+  [4;36;1mProject Load (0.3ms)[0m   [0;1mSELECT * FROM `projects` WHERE (`projects`.user_id = 1) AND (`projects`.`state` = 'hidden') ORDER BY projects.position ASC[0m
+  [4;35;1mProject Load (0.3ms)[0m   [0mSELECT * FROM `projects` WHERE (`projects`.user_id = 1) AND (`projects`.`state` = 'completed') ORDER BY projects.position ASC[0m
+  [4;36;1mContext Load (0.2ms)[0m   [0;1mSELECT * FROM `contexts` WHERE (`contexts`.user_id = 1) AND (`contexts`.`hide` = 1) ORDER BY position ASC[0m
+  [4;35;1mProject Load (0.2ms)[0m   [0mSELECT * FROM `projects` WHERE (`projects`.user_id = 1 AND (default_tags != '')) AND (NOT(state = 'completed')) ORDER BY projects.position ASC[0m
+Rendered shared/_flash (0.2ms)
+Rendered shared/_footer (1.0ms)
+Completed in 738ms (View: 285, DB: 45) | 200 OK [http://0.0.0.0/]
+** has_many_polymorphs: autoload hook invoked
+** has_many_polymorphs: preloading parent model Tag
+** has_many_polymorphs: associating Tag.taggables
+  [4;36;1mSQL (0.4ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+DEPRECATION WARNING: Kernel#returning has been deprecated in favor of Object#tap. (called from build_table_aliases at /home/architect/Desktop/Projetos/2doo/vendor/gems/has_many_polymorphs-2.13/lib/has_many_polymorphs/class_methods.rb:358)
+  [4;35;1mRecurringTodo Columns (3.1ms)[0m   [0mSHOW FIELDS FROM `recurring_todos`[0m
+  [4;36;1mTagging Columns (1.5ms)[0m   [0;1mSHOW FIELDS FROM `taggings`[0m
+  [4;35;1mTodo Columns (2.0ms)[0m   [0mSHOW FIELDS FROM `todos`[0m
+DEPRECATION WARNING: Kernel#returning has been deprecated in favor of Object#tap. (called from create_has_many_polymorphs_reflection at /home/architect/Desktop/Projetos/2doo/vendor/gems/has_many_polymorphs-2.13/lib/has_many_polymorphs/class_methods.rb:343)
+** has_many_polymorphs: preloading parent model Tagging
+
+
+Processing LoginController#check_expiry (for 127.0.0.1 at 2011-05-14 22:06:53) [GET]
+  Parameters: {"_source_view"=>"todo", "action"=>"check_expiry", "authenticity_token"=>"LaJfZlO8QkNCtUwEI3lSP4GsMZwTvb4m+olXDflQGc0=", "controller"=>"login", "_"=>"1305421613353"}
+  [4;36;1mUser Columns (1.6ms)[0m   [0;1mSHOW FIELDS FROM `users`[0m
+  [4;35;1mUser Load (0.2ms)[0m   [0mSELECT * FROM `users` WHERE (`users`.`id` = 1) [0m
+  [4;36;1mPreference Load (0.3ms)[0m   [0;1mSELECT * FROM `preferences` WHERE (`preferences`.user_id = 1) LIMIT 1[0m
+  [4;35;1mPreference Columns (2.0ms)[0m   [0mSHOW FIELDS FROM `preferences`[0m
+Selected 'en' as locale
+Rendering login/check_expiry
+Completed in 85ms (View: 11, DB: 12) | 200 OK [http://0.0.0.0/login/check_expiry?_source_view=todo&authenticity_token=LaJfZlO8QkNCtUwEI3lSP4GsMZwTvb4m%2BolXDflQGc0%3D&_=1305421613353]

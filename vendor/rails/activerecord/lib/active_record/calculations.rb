@@ -48,30 +48,38 @@ module ActiveRecord
         calculate(:count, *construct_count_options_from_args(*args))
       end
 
-      # Calculates the average value on a given column.  The value is returned as a float.  See +calculate+ for examples with options.
+      # Calculates the average value on a given column. The value is returned as
+      # a float, or +nil+ if there's no row. See +calculate+ for examples with
+      # options.
       #
-      #   Person.average('age')
+      #   Person.average('age') # => 35.8
       def average(column_name, options = {})
         calculate(:avg, column_name, options)
       end
 
-      # Calculates the minimum value on a given column.  The value is returned with the same data type of the column.  See +calculate+ for examples with options.
+      # Calculates the minimum value on a given column.  The value is returned
+      # with the same data type of the column, or +nil+ if there's no row. See
+      # +calculate+ for examples with options.
       #
-      #   Person.minimum('age')
+      #   Person.minimum('age') # => 7
       def minimum(column_name, options = {})
         calculate(:min, column_name, options)
       end
 
-      # Calculates the maximum value on a given column.  The value is returned with the same data type of the column.  See +calculate+ for examples with options.
+      # Calculates the maximum value on a given column. The value is returned
+      # with the same data type of the column, or +nil+ if there's no row. See
+      # +calculate+ for examples with options.
       #
-      #   Person.maximum('age')
+      #   Person.maximum('age') # => 93
       def maximum(column_name, options = {})
         calculate(:max, column_name, options)
       end
 
-      # Calculates the sum of values on a given column.  The value is returned with the same data type of the column.  See +calculate+ for examples with options.
+      # Calculates the sum of values on a given column. The value is returned
+      # with the same data type of the column, 0 if there's no row. See
+      # +calculate+ for examples with options.
       #
-      #   Person.sum('age')
+      #   Person.sum('age') # => 4562
       def sum(column_name, options = {})
         calculate(:sum, column_name, options)
       end
@@ -179,9 +187,11 @@ module ActiveRecord
           # A (slower) workaround if we're using a backend, like sqlite, that doesn't support COUNT DISTINCT.
           sql = "SELECT COUNT(*) AS #{aggregate_alias}" if use_workaround
 
-          sql << ", #{options[:group_field]} AS #{options[:group_alias]}" if options[:group]
+          options[:group_fields].each_index{|i| sql << ", #{options[:group_fields][i]} AS #{options[:group_aliases][i]}" } if options[:group]
           if options[:from]
             sql << " FROM #{options[:from]} "
+          elsif scope && scope[:from] && !use_workaround
+            sql << " FROM #{scope[:from]} "
           else
             sql << " FROM (SELECT #{distinct}#{column_name}" if use_workaround
             sql << " FROM #{connection.quote_table_name(table_name)} "
@@ -201,18 +211,20 @@ module ActiveRecord
           add_limited_ids_condition!(sql, options, join_dependency) if join_dependency && !using_limitable_reflections?(join_dependency.reflections) && ((scope && scope[:limit]) || options[:limit])
 
           if options[:group]
-            group_key = connection.adapter_name == 'FrontBase' ?  :group_alias : :group_field
-            sql << " GROUP BY #{options[group_key]} "
+            group_key = connection.adapter_name == 'FrontBase' ?  :group_aliases : :group_fields
+            sql << " GROUP BY #{options[group_key].join(',')} "
           end
 
           if options[:group] && options[:having]
+            having = sanitize_sql_for_conditions(options[:having])
+
             # FrontBase requires identifiers in the HAVING clause and chokes on function calls
             if connection.adapter_name == 'FrontBase'
-              options[:having].downcase!
-              options[:having].gsub!(/#{operation}\s*\(\s*#{column_name}\s*\)/, aggregate_alias)
+              having.downcase!
+              having.gsub!(/#{operation}\s*\(\s*#{column_name}\s*\)/, aggregate_alias)
             end
 
-            sql << " HAVING #{options[:having]} "
+            sql << " HAVING #{having} "
           end
 
           sql << " ORDER BY #{options[:order]} "       if options[:order]
@@ -227,24 +239,31 @@ module ActiveRecord
         end
 
         def execute_grouped_calculation(operation, column_name, column, options) #:nodoc:
-          group_attr      = options[:group].to_s
-          association     = reflect_on_association(group_attr.to_sym)
-          associated      = association && association.macro == :belongs_to # only count belongs_to associations
-          group_field     = associated ? association.primary_key_name : group_attr
-          group_alias     = column_alias_for(group_field)
-          group_column    = column_for group_field
-          sql             = construct_calculation_sql(operation, column_name, options.merge(:group_field => group_field, :group_alias => group_alias))
+          group_attr    = options[:group]
+          association   = reflect_on_association(group_attr.to_s.to_sym)
+          associated    = association && association.macro == :belongs_to # only count belongs_to associations
+          group_fields  = Array(associated ? association.primary_key_name : group_attr)
+          group_aliases = []
+          group_columns = {}
+          
+          group_fields.each do |field|
+            group_aliases << column_alias_for(field)
+            group_columns[column_alias_for(field)] = column_for(field)
+          end
+
+          sql             = construct_calculation_sql(operation, column_name, options.merge(:group_fields => group_fields, :group_aliases => group_aliases))
           calculated_data = connection.select_all(sql)
           aggregate_alias = column_alias_for(operation, column_name)
 
           if association
-            key_ids     = calculated_data.collect { |row| row[group_alias] }
+            key_ids     = calculated_data.collect { |row| row[group_aliases.first] }
             key_records = association.klass.base_class.find(key_ids)
             key_records = key_records.inject({}) { |hsh, r| hsh.merge(r.id => r) }
           end
 
           calculated_data.inject(ActiveSupport::OrderedHash.new) do |all, row|
-            key   = type_cast_calculated_value(row[group_alias], group_column)
+            key   = group_aliases.map{|group_alias| type_cast_calculated_value(row[group_alias], group_columns[group_alias])}
+            key   = key.first if key.size == 1
             key   = key_records[key] if associated
             value = row[aggregate_alias]
             all[key] = type_cast_calculated_value(value, column, operation)
@@ -282,12 +301,15 @@ module ActiveRecord
         end
 
         def type_cast_calculated_value(value, column, operation = nil)
-          operation = operation.to_s.downcase
-          case operation
+          if value.is_a?(String) || value.nil?
+            case operation.to_s.downcase
             when 'count' then value.to_i
             when 'sum'   then type_cast_using_column(value || '0', column)
-            when 'avg'   then value && (value.is_a?(Fixnum) ? value.to_f : value).to_d
+            when 'avg' then value.try(:to_d)
             else type_cast_using_column(value, column)
+            end
+          else
+            value
           end
         end
 

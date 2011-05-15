@@ -3,74 +3,29 @@
     <%= project_next_prev %>
   </div>
 
-<%= render :partial => "projects/project", :locals => { :project => @project, :collapsible => false } %>
-<%= render :partial => "todos/deferred", :locals => { :deferred => @deferred, :collapsible => false, :append_descriptor => "in this project", :parent_container_type => 'project' } %>
-<% unless @max_completed==0 -%>
-  <%= render :partial => "todos/completed", :locals => { :done => @done, :collapsible => false, :suppress_project => true, :append_descriptor => "in this project" } %>
-<% end -%>
+  <%= render :partial => @project, :locals => {:collapsible => false } %>
+  <%= render :partial => "todos/deferred", :object => @deferred, :locals => { :collapsible => false, :append_descriptor => t('projects.todos_append'), :parent_container_type => 'project', :pending => @pending } %>
+  <% unless @max_completed==0 -%>
+    <%= render :partial => "todos/completed", :object => @done, :locals => { :collapsible => false, :suppress_project => true, :append_descriptor => t('projects.todos_append') } %>
+  <% end -%>
 
-<div class="container">
- <div id="notes">
-  <div class="add_note_link"><%= link_to_function( "Add a note", "Element.toggle('new-note'); Form.focusFirstElement('form-new-note');", :id=>"add_note_href") %></div>
-   <h2>Notes</h2>
-   <div id="empty-n" style="display:<%= @project.notes.empty? ? 'block' : 'none'%>;">
-    <%= render :partial => "shared/empty",
-              :locals => { :message => "Currently there are no notes attached to this project"} %>
-   </div>
-   <%= render :partial => "notes/notes_summary", :collection => @project.notes %>
-  </div>
-</div>
-
-
-    <div id="new-note" style="display:none;">
-    <% form_remote_tag :url => notes_path,
-                       :method => :post,
-                     :update => "notes",
-                     :position => "bottom",
-                     :complete => "new Effect.Highlight('notes');$('empty-n').hide();Form.reset('form-new-note');",
-                     :html => {:id=>'form-new-note', :class => 'inline-form'} do %>
-    <%= hidden_field( "new_note", "project_id", "value" => "#{@project.id}" ) %>
-    <%= text_area( "new_note", "body", "cols" => 50, "rows" => 3, "tabindex" => 1 ) %>
-    <br /><br />
-    <input type="submit" value="Add note" name="add-new-note" tabindex="2" />
-    <% end -%>
+  <div class="container">
+    <div id="notes">
+      <div class="add_note_link"><%= link_to t('projects.add_note'), '#' %> </div>
+      <h2><%= t('projects.notes') %></h2>
+      <div id="empty-n" style="display:<%= @project.notes.empty? ? 'block' : 'none'%>;">
+        <%= render :partial => "shared/empty",
+          :locals => { :message => t('projects.no_notes_attached')} %>
+      </div>
+      <%= render :partial => "notes/notes_summary", :collection => @project.notes %>
     </div>
-
-<div class="container">
- <div id="project_status">
-  <h2>Status</h2>
-  <div>
-   <% ['active', 'hidden', 'completed'].each do | state | %>
-    <% span_class = @project.current_state.to_s == state ? 'active_state' : 'inactive_state' %>
-    <span class="<%= state %>"><%= radio_button(:project, 'state', state) %> <span class="<%= span_class %>"><%= state.titlecase %></span></span>
-   <% end %>
-   <% apply_behavior "#project_status input:click",
-                     remote_function(:url => project_path(@project), :method => :put,
-                                     :with => "'wants_render=false&update_status=true&project[state]='+this.value" )
-   %>
   </div>
- </div>
-</div>
 
-<div class="container">
-    <div id="default_context">
-        <h2>Default Context</h2>
-        <div>
-            <% form_remote_tag( :url => project_path(@project), :method => :put,
-                                :html=> { :id => 'set-default-context-action',
-                                          :name => 'default_context',
-                                          :class => 'inline-form' }) do -%>
-              <%= hidden_field_tag("update_default_context", true) %>
-              <%= text_field_tag("project[default_context_name]",
-                                 @project.default_context.name,
-                                 { :tabindex => 9,:size => 25 }) %>
-              <%= submit_tag "Set Default Context for this Project", { :tabindex => 10 } %>
-              <%= render :partial => 'default_context_autocomplete' %>
-            <% end -%>
-        </div>
-    </div>
+  <div id="new-note" style="display:none;">
+    <%= render :partial => "notes/note_edit_form", :object => @new_note, :locals => {:submit_text => t('projects.add_note_submit')} %>
+  </div>
+
 </div>
-</div><!-- [end:display_box] -->
 
 <div id="input_box">
   <%= render :partial => "shared/add_new_item_form" %>

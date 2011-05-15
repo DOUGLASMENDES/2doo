@@ -1,23 +1,48 @@
 class Project < ActiveRecord::Base
-  has_many :todos, :dependent => :delete_all, :include => :context
+  has_many :todos, :dependent => :delete_all
+
+  # TODO: remove these scopes. Can be replaced by the named scopes on the todo relation
+  has_many :not_done_todos,
+    :include => [:context,:tags,:project],
+    :class_name => 'Todo',
+    :order => "todos.due IS NULL, todos.due ASC, todos.created_at ASC",
+    :conditions => ["todos.state = ?", 'active']
+  has_many :done_todos,
+    :include => [:context,:tags,:project],
+    :class_name => 'Todo',
+    :order => "todos.due IS NULL, todos.due ASC, todos.created_at ASC",
+    :conditions => ["todos.state = ?", 'completed']
+  has_many :deferred_todos,
+    :include => [:context,:tags,:project],
+    :class_name => 'Todo',
+    :conditions => ["todos.state = ? ", "deferred"],
+    :order => "show_from"
+  has_many :pending_todos,
+    :include => [:context,:tags,:project],
+    :class_name => 'Todo',
+    :conditions => ["todos.state = ? ", "pending"],
+    :order => "show_from"
+
   has_many :notes, :dependent => :delete_all, :order => "created_at DESC"
   has_many :recurring_todos
+
   belongs_to :default_context, :class_name => "Context", :foreign_key => "default_context_id"
   belongs_to :user
 
   named_scope :active, :conditions => { :state => 'active' }
   named_scope :hidden, :conditions => { :state => 'hidden' }
   named_scope :completed, :conditions => { :state => 'completed'}
+  named_scope :uncompleted, :conditions => ["NOT(state = ?)", 'completed']
   
-  validates_presence_of :name, :message => "project must have a name"
-  validates_length_of :name, :maximum => 255, :message => "project name must be less than 256 characters"
-  validates_uniqueness_of :name, :message => "already exists", :scope =>"user_id"
-  validates_does_not_contain :name, :string => ',', :message => "cannot contain the comma (',') character"
+  validates_presence_of :name
+  validates_length_of :name, :maximum => 255
+  validates_uniqueness_of :name, :scope => "user_id"
+  validates_does_not_contain :name, :string => ','
 
   acts_as_list :scope => 'user_id = #{user_id} AND state = \'#{state}\''
   acts_as_state_machine :initial => :active, :column => 'state'
   extend NamePartFinder
-  include Tracks::TodoList
+  #include Tracks::TodoList
   
   state :active
   state :hidden, :enter => :hide_todos, :exit => :unhide_todos
@@ -44,8 +69,8 @@ class Project < ActiveRecord::Base
   
   def self.feed_options(user)
     {
-      :title => 'Tracks Projects',
-      :description => "Lists all the projects for #{user.display_name}"
+      :title => I18n.t('models.project.feed_title'),
+      :description => I18n.t('models.project.feed_description', :username => user.display_name)
     }
   end
       

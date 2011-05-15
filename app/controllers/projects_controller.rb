@@ -6,17 +6,19 @@ class ProjectsController < ApplicationController
   before_filter :default_context_filter, :only => [:create, :update]
   skip_before_filter :login_required, :only => [:index]
   prepend_before_filter :login_or_feed_token_required, :only => [:index]
-  session :off, :only => :index, :if => Proc.new { |req| ['rss','atom','txt'].include?(req.parameters[:format]) }
 
   def index
-    @projects = current_user.projects(true)
+    @source_view = params['_source_view'] || 'project_list'
+    @new_project = current_user.projects.build
     if params[:projects_and_actions]
       projects_and_actions
     else      
-      @contexts = current_user.contexts(true)
+      @contexts = current_user.contexts.all
       init_not_done_counts(['project'])
       if params[:only_active_with_no_next_actions]
-        @projects = @projects.select { |p| p.active? && count_undone_todos(p) == 0 }
+        @projects = current_user.projects.active.select { |p| count_undone_todos(p) == 0 }
+      else
+        @projects = current_user.projects.all
       end
       init_project_hidden_todo_counts(['project'])
       respond_to do |format|
@@ -26,12 +28,13 @@ class ProjectsController < ApplicationController
         format.rss   &render_rss_feed
         format.atom  &render_atom_feed
         format.text  &render_text_feed
+        format.autocomplete { render :text => for_autocomplete(current_user.projects.uncompleted, params[:term]) }
       end
     end
   end
 
   def projects_and_actions
-    @projects = @projects.active
+    @projects = current_user.projects.active
     respond_to do |format|
       format.text  { 
         render :action => 'index_text_projects_and_actions', :layout => false, :content_type => Mime::TEXT
@@ -40,24 +43,24 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    @contexts = current_user.contexts(true)
-    init_data_for_sidebar unless mobile?
-    @projects = current_user.projects
-    @contexts = current_user.contexts
-    @page_title = "TRACKS::Project: #{@project.name}"
-    @project.todos.send :with_scope, :find => { :include => [:context] } do
-      @not_done = @project.not_done_todos(:include_project_hidden_todos => true)
-      @deferred = @project.deferred_todos.sort_by { |todo| todo.show_from }
-      @done = @project.done_todos
-    end
-    
     @max_completed = current_user.prefs.show_number_completed
+    init_data_for_sidebar unless mobile?
+    @page_title = t('projects.page_title', :project => @project.name)
     
+    @not_done = @project.todos.active_or_hidden(:include => [:tags, :context, :predecessors])
+    @deferred = @project.deferred_todos(:include => [:tags, :context, :predecessors])
+    @pending = @project.pending_todos(:include => [:tags, :context, :predecessors])
+    @done = @project.todos.find_in_state(:all, :completed,
+      :order => "todos.completed_at DESC", :limit => current_user.prefs.show_number_completed, :include => [:context, :tags, :predecessors])
+
     @count = @not_done.size
-    @down_count = @count + @deferred.size 
+    @down_count = @count + @deferred.size + @pending.size
     @next_project = current_user.projects.next_from(@project)
     @previous_project = current_user.projects.previous_from(@project)
-    @default_project_context_name_map = build_default_project_context_name_map(@projects).to_json
+    @default_tags = @project.default_tags
+    @new_note = current_user.notes.new
+    @new_note.project_id = @project.id
+    @contexts = current_user.contexts
     respond_to do |format|
       format.html
       format.m     &render_project_mobile
@@ -70,12 +73,13 @@ class ProjectsController < ApplicationController
   #                    -u username:password
   #                    -d '<request><project><name>new project_name</name></project></request>'
   #                    http://our.tracks.host/projects
-  # 
+  #
   def create
     if params[:format] == 'application/xml' && params['exception']
       render_failure "Expected post format is valid xml like so: <request><project><name>project name</name></project></request>."
       return
     end
+
     @project = current_user.projects.build
     params_are_invalid = true
     if (params['project'] || (params['request'] && params['request']['project']))
@@ -84,9 +88,11 @@ class ProjectsController < ApplicationController
     end
     @go_to_project = params['go_to_project']
     @saved = @project.save
+
     @project_not_done_counts = { @project.id => 0 }
     @active_projects_count = current_user.projects.active.count
     @contexts = current_user.contexts
+
     respond_to do |format|
       format.js { @down_count = current_user.projects.size }
       format.xml do
@@ -95,49 +101,56 @@ class ProjectsController < ApplicationController
         elsif @project.new_record?
           render_failure @project.errors.full_messages.join(', ')
         else
-          head :created, :location => project_url(@project)
+          head :created, :location => project_url(@project), :text => @project.id
         end
       end
+      format.html {redirect_to :action => 'index'}
     end
   end
 
   # Edit the details of the project
-  # 
+  #
   def update
     params['project'] ||= {}
     if params['project']['state']
       @new_state = params['project']['state']
       @state_changed = @project.state != @new_state
-      logger.info "@state_changed: #{@project.state} == #{params['project']['state']} != #{@state_changed}"
       params['project'].delete('state')
     end
     success_text = if params['field'] == 'name' && params['value']
       params['project']['id'] = params['id'] 
       params['project']['name'] = params['value'] 
     end
+
     @project.attributes = params['project']
-    if @project.save
+    @saved = @project.save
+    if @saved
       @project.transition_to(@new_state) if @state_changed
       if boolean_param('wants_render')
         if (@project.hidden?)
           @project_project_hidden_todo_counts = Hash.new
-          @project_project_hidden_todo_counts[@project.id] = @project.reload().not_done_todo_count(:include_project_hidden_todos => true)
+          @project_project_hidden_todo_counts[@project.id] = @project.reload().todos.active_or_hidden.count
         else
           @project_not_done_counts = Hash.new
-          @project_not_done_counts[@project.id] = @project.reload().not_done_todo_count(:include_project_hidden_todos => true)
+          @project_not_done_counts[@project.id] = @project.reload().todos.active_or_hidden.count
         end
         @contexts = current_user.contexts
-        @active_projects_count = current_user.projects.active.count
-        @hidden_projects_count = current_user.projects.hidden.count
-        @completed_projects_count = current_user.projects.completed.count
-        render :template => 'projects/update.js.rjs'
+        update_state_counts
+        init_data_for_sidebar
+        render :template => 'projects/update.js.erb'
         return
+
+        # TODO: are these params ever set? or is this dead code?
+
       elsif boolean_param('update_status')
         render :template => 'projects/update_status.js.rjs'
         return
       elsif boolean_param('update_default_context')
         @initial_context_name = @project.default_context.name 
         render :template => 'projects/update_default_context.js.rjs'
+        return
+      elsif boolean_param('update_default_tags')
+        render :template => 'projects/update_default_tags.js.rjs'
         return
       elsif boolean_param('update_project_name')
         @projects = current_user.projects
@@ -148,15 +161,14 @@ class ProjectsController < ApplicationController
         return
       end
     else
-      notify :warning, "Couldn't update project"
-      render :text => ''
+      init_data_for_sidebar
+      render :template => 'projects/update.js.erb'
       return
     end
-    render :template => 'projects/update.js.rjs'
+    render :template => 'projects/update.js.erb'
   end
   
   def edit
-    @contexts = current_user.contexts
     respond_to do |format|
       format.js
     end
@@ -165,17 +177,18 @@ class ProjectsController < ApplicationController
   def destroy
     @project.recurring_todos.each {|rt| rt.remove_from_project!}
     @project.destroy
-    @active_projects_count = current_user.projects.active.count
-    @hidden_projects_count = current_user.projects.hidden.count
-    @completed_projects_count = current_user.projects.completed.count
+
     respond_to do |format|
-      format.js { @down_count = current_user.projects.size }
+      format.js {
+        @down_count = current_user.projects.size
+        update_state_counts
+      }
       format.xml { render :text => "Deleted project #{@project.name}" }
     end
   end
   
   def order
-    project_ids = params["list-active-projects"] || params["list-hidden-projects"] || params["list-completed-projects"]    
+    project_ids = params["container_project"]
     @projects = current_user.projects.update_positions( project_ids )
     render :nothing => true
   rescue
@@ -188,6 +201,7 @@ class ProjectsController < ApplicationController
     @projects = current_user.projects.alphabetize(:state => @state) if @state
     @contexts = current_user.contexts
     init_not_done_counts(['project'])
+    init_project_hidden_todo_counts(['project']) if @state == 'hidden'
   end
   
   def actionize
@@ -195,19 +209,29 @@ class ProjectsController < ApplicationController
     @projects = current_user.projects.actionize(current_user.id, :state => @state) if @state
     @contexts = current_user.contexts
     init_not_done_counts(['project'])
+    init_project_hidden_todo_counts(['project']) if @state == 'hidden'
   end
   
   protected
-    
+
+  def update_state_counts
+    @active_projects_count = current_user.projects.active.count
+    @hidden_projects_count = current_user.projects.hidden.count
+    @completed_projects_count = current_user.projects.completed.count
+    @show_active_projects = @active_projects_count > 0
+    @show_hidden_projects = @hidden_projects_count > 0
+    @show_completed_projects = @completed_projects_count > 0
+  end
+
   def render_projects_html
     lambda do
-      @page_title = "TRACKS::List Projects"
-      @count = current_user.projects.size 
-      @active_projects = @projects.active
-      @hidden_projects = @projects.hidden
-      @completed_projects = @projects.completed
-      @no_projects = @projects.empty?
-      @projects.cache_note_counts
+      @page_title = t('projects.list_projects')
+      @count = current_user.projects.count
+      @active_projects = current_user.projects.active
+      @hidden_projects = current_user.projects.hidden
+      @completed_projects = current_user.projects.completed
+      @no_projects = current_user.projects.empty?
+      current_user.projects.cache_note_counts
       @new_project = current_user.projects.build
       render
     end
@@ -215,9 +239,9 @@ class ProjectsController < ApplicationController
 
   def render_projects_mobile
     lambda do
-      @active_projects = @projects.active
-      @hidden_projects = @projects.hidden
-      @completed_projects = @projects.completed
+      @active_projects = current_user.projects.active
+      @hidden_projects = current_user.projects.hidden
+      @completed_projects = current_user.projects.completed
       @down_count = @active_projects.size + @hidden_projects.size + @completed_projects.size 
       cookies[:mobile_url]= {:value => request.request_uri, :secure => SITE_CONFIG['secure_cookies']}
       render :action => 'index_mobile'
@@ -227,10 +251,9 @@ class ProjectsController < ApplicationController
   def render_project_mobile
     lambda do
       if @project.default_context.nil?
-        @project_default_context = "This project does not have a default context"
+        @project_default_context = t('projects.no_default_context')
       else
-        @project_default_context = "The default context for this project is "+
-          @project.default_context.name
+        @project_default_context = t('projects.default_context', :context => @project.default_context.name)
       end
       cookies[:mobile_url]= {:value => request.request_uri, :secure => SITE_CONFIG['secure_cookies']}
       @mobile_from_project = @project.id
@@ -241,7 +264,8 @@ class ProjectsController < ApplicationController
   def render_rss_feed
     lambda do
       render_rss_feed_for @projects, :feed => feed_options,
-        :item => { :title => :name, :description => lambda { |p| summary(p) } }
+        :title => :name,
+        :item => { :description => lambda { |p| summary(p) } }
     end
   end
 
@@ -281,7 +305,7 @@ class ProjectsController < ApplicationController
     p.delete('default_context_name')
 
     unless default_context_name.blank?
-      default_context = Context.find_or_create_by_name(default_context_name)
+      default_context = current_user.contexts.find_or_create_by_name(default_context_name)
       p['default_context_id'] = default_context.id
     end
   end
@@ -290,7 +314,7 @@ class ProjectsController < ApplicationController
     project_description = ''
     project_description += sanitize(markdown( project.description )) unless project.description.blank?
     project_description += "<p>#{count_undone_todos_phrase(p)}. "
-    project_description += "Project is #{project.state}."
+    project_description += t('projects.project_state', :state => project.state)
     project_description += "</p>"
     project_description
   end

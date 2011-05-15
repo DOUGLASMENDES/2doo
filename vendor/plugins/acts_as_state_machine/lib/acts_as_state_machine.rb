@@ -57,8 +57,11 @@ module ScottBarron                   #:nodoc:
             old_state = states[record.current_state]
           
             next_state.entering(record) unless loopback
-          
-            record.update_attribute(record.class.state_column, to.to_s)
+            if record.new_record?
+              record.send(record.class.state_column.to_s + '=', to.to_s)
+            else
+              record.update_attribute(record.class.state_column, to.to_s)
+            end
           
             next_state.entered(record) unless loopback
             old_state.exited(record) unless loopback
@@ -143,7 +146,12 @@ module ScottBarron                   #:nodoc:
       
         # Returns the current state the object is in, as a Ruby symbol.
         def current_state
-          self.send(self.class.state_column).to_sym
+          x = self.send(self.class.state_column)
+          return x.to_sym if not x.nil?
+          
+          # if current state is not yet set, set it
+          self.set_initial_state
+          return self.current_state
         end
       
         # Returns what the next state for a given event would be, as a Ruby symbol.

@@ -1,7 +1,6 @@
 ENV["RAILS_ENV"] = "test"
 require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
-require File.expand_path(File.dirname(__FILE__) + "/../app/controllers/application")
-require 'autotest/rails' #you need the zentest gem installed
+require File.expand_path(File.dirname(__FILE__) + "/../app/controllers/application_controller")
 require 'test_help'
 require 'flexmock/test_unit' #and the flexmock gem, too!
 require 'action_web_service/test_invoke'
@@ -41,8 +40,8 @@ class Test::Unit::TestCase
 
 end
 
-
-class ActiveSupport::TestCase    
+class ActiveSupport::TestCase
+   
   # Generates a random string of ascii characters (a-z, "1 0")
   # of a given length for testing assignment to fields
   # for validation purposes
@@ -83,8 +82,23 @@ class ActiveSupport::TestCase
      end
    end
   end
-  
-  
+
+  def set_user_to_current_time_zone(user)
+    jan_offset = Time.now.beginning_of_year.utc_offset
+    jul_offset = Time.now.beginning_of_year.change(:month => 7).utc_offset
+    offset = jan_offset < jul_offset ? jan_offset : jul_offset
+    offset = if offset.to_s.match(/(\+|-)?(\d+):(\d+)/)
+      sign = $1 == '-' ? -1 : 1
+      hours, minutes = $2.to_f, $3.to_f
+      ((hours * 3600) + (minutes.to_f * 60)) * sign
+    elsif offset.to_f.abs <= 13
+      offset.to_f * 3600
+    else
+      offset.to_f
+    end
+    zone = ActiveSupport::TimeZone.all.find{|t| t.utc_offset == offset}
+    user.prefs.update_attribute(:time_zone, zone.name)
+  end
 end
 
 class ActionController::IntegrationTest

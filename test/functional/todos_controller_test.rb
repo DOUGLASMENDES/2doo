@@ -34,6 +34,35 @@ class TodosControllerTest < ActionController::TestCase
     assert !t.starred?
   end
 
+  def test_tagging_changes_to_tag_with_numbers
+    # by default has_many_polymorph searches for tags with given id if the tag is a number. we do not want that
+    login_as(:admin_user)
+    assert_difference 'Todo.count' do
+      put :create, :_source_view => 'todo', "context_name"=>"library", "project_name"=>"Build a working time machine", "todo"=>{
+        "notes"=>"", "description"=>"test tags", "due"=>"30/11/2006"},
+        "tag_list"=>"1234,5667,9876"
+      # default has_many_polymorphs will fail on these high numbers as tags with those id's do not exist
+    end
+    t = assigns['todo']
+    assert_equal t.description, "test tags"
+    assert_equal 3, t.tags.count
+  end
+
+  def test_tagging_changes_to_handle_empty_tags
+    # by default has_many_polymorph searches for tags with given id if the tag is a number. we do not want that
+    login_as(:admin_user)
+    assert_difference 'Todo.count' do
+      put :create, :_source_view => 'todo', "context_name"=>"library", "project_name"=>"Build a working time machine", "todo"=>{
+        "notes"=>"", "description"=>"test tags", "due"=>"30/11/2006"},
+        "tag_list"=>"a,,b"
+      # default has_many_polymorphs will fail on the empty tag
+    end
+    t = assigns['todo']
+    assert_equal t.description, "test tags"
+    assert_equal 2, t.tags.count
+  end
+
+
   def test_not_done_counts_after_hiding_project
     p = Project.find(1)
     p.hide!
@@ -61,20 +90,20 @@ class TodosControllerTest < ActionController::TestCase
   def test_deferred_count_for_project_source_view
     login_as(:admin_user)
     xhr :post, :toggle_check, :id => 5, :_source_view => 'project'
-    assert_equal 1, assigns['deferred_count']
+    assert_equal 1, assigns['remaining_deferred_or_pending_count']
     xhr :post, :toggle_check, :id => 15, :_source_view => 'project'
-    assert_equal 0, assigns['deferred_count']
+    assert_equal 0, assigns['remaining_deferred_or_pending_count']
   end
 
   def test_destroy_todo
     login_as(:admin_user)
     xhr :post, :destroy, :id => 1, :_source_view => 'todo'
-    assert_rjs :page, "todo_1", :remove
-    # #assert_rjs :replace_html, "badge-count", '9'
+    todo = Todo.find_by_id(1)
+    assert_nil todo
   end
 
   def test_create_todo
-    assert_difference Todo, :count do
+    assert_difference 'Todo.count' do
       login_as(:admin_user)
       put :create, :_source_view => 'todo', "context_name"=>"library", "project_name"=>"Build a working time machine", "todo"=>{"notes"=>"", "description"=>"Call Warren Buffet to find out how much he makes per day", "due"=>"30/11/2006"}, "tag_list"=>"foo bar"
     end
@@ -82,36 +111,18 @@ class TodosControllerTest < ActionController::TestCase
 
   def test_create_todo_via_xml
     login_as(:admin_user)
-    assert_difference Todo, :count do
+    assert_difference 'Todo.count' do
       put :create, :format => "xml", "request" => { "context_name"=>"library", "project_name"=>"Build a working time machine", "todo"=>{"notes"=>"", "description"=>"Call Warren Buffet to find out how much he makes per day", "due"=>"30/11/2006"}, "tag_list"=>"foo bar" }
       assert_response 201
     end
   end
 
-  def test_create_todo_via_xml_show_from
-    login_as(:admin_user)
-
-    assert_difference Todo, :count do
-      xml = "<todo><description>Call Warren Buffet to find out how much he makes per day</description><project_id>#{projects(:timemachine).id}</project_id><context_id>#{contexts(:agenda).id}</context_id><show-from type=\"datetime\">#{1.week.from_now.xmlschema}</show-from></todo>"
-
-      # p parse_xml_body(xml)
-      post :create, parse_xml_body(xml).update(:format => "xml")
-      assert_response :created
-    end
-  end
-
-  def parse_xml_body(body)
-    env = { 'rack.input' => StringIO.new(body),
-      'HTTP_X_POST_DATA_FORMAT' => 'xml',
-      'CONTENT_LENGTH'          => body.size.to_s }
-    ActionController::RackRequest.new(env).request_parameters
-  end
-
-
   def test_fail_to_create_todo_via_xml
     login_as(:admin_user)
     # #try to create with no context, which is not valid
-    put :create, :format => "xml", "request" => { "project_name"=>"Build a working time machine", "todo"=>{"notes"=>"", "description"=>"Call Warren Buffet to find out how much he makes per day", "due"=>"30/11/2006"}, "tag_list"=>"foo bar" }
+    put :create, :format => "xml", "request" => { 
+      "project_name"=>"Build a working time machine",
+      "todo"=>{"notes"=>"", "description"=>"Call Warren Buffet to find out how much he makes per day", "due"=>"30/11/2006"}, "tag_list"=>"foo bar" }
     assert_response 422
     assert_xml_select "errors" do
       assert_xml_select "error", "Context can't be blank"
@@ -340,7 +351,7 @@ class TodosControllerTest < ActionController::TestCase
         "due(1i)"=>"2007", "due(2i)"=>"1", "due(3i)"=>"2",
         "show_from(1i)"=>"", "show_from(2i)"=>"", "show_from(3i)"=>"",
         "project_id"=>"1",
-        "notes"=>"test notes", "description"=>"test_mobile_create_action", "state"=>"0"}}
+        "notes"=>"test notes", "description"=>"test_mobile_create_action"}}
     t = Todo.find_by_description("test_mobile_create_action")
     assert_not_nil t
     assert_equal 2, t.context_id
@@ -367,14 +378,8 @@ class TodosControllerTest < ActionController::TestCase
         "due(1i)"=>"2007", "due(2i)"=>"1", "due(3i)"=>"2",
         "show_from(1i)"=>"", "show_from(2i)"=>"", "show_from(3i)"=>"",
         "project_id"=>"1",
-        "notes"=>"test notes", "state"=>"0"}, "tag_list"=>"test, test2"}
+        "notes"=>"test notes"}, "tag_list"=>"test, test2"}
     assert_template 'todos/new'
-  end
-
-  def test_index_html_assigns_default_project_name_map
-    login_as(:admin_user)
-    get :index, {"format"=>"html"}
-    assert_equal '"{\\"Build a working time machine\\": \\"lab\\"}"', assigns(:default_project_context_name_map)
   end
 
   def test_toggle_check_on_recurring_todo
@@ -402,12 +407,16 @@ class TodosControllerTest < ActionController::TestCase
     # change recurrence pattern to monthly and set show_from 2 days before due
     # date this forces the next todo to be put in the tickler
     recurring_todo_1.show_from_delta = 2
+    recurring_todo_1.show_always = 0
+    recurring_todo_1.target = 'due_date'
     recurring_todo_1.recurring_period = 'monthly'
     recurring_todo_1.recurrence_selector = 0
     recurring_todo_1.every_other1 = 1
     recurring_todo_1.every_other2 = 2
     recurring_todo_1.every_other3 = 5
-    recurring_todo_1.save
+    # use assert to catch validation errors if present. we need to replace
+    # this with a good factory implementation
+    assert recurring_todo_1.save
 
     # mark next_todo as complete by toggle_check
     xhr :post, :toggle_check, :id => next_todo.id, :_source_view => 'todo'
@@ -432,6 +441,7 @@ class TodosControllerTest < ActionController::TestCase
 
     # link todo_1 and recurring_todo_1
     recurring_todo_1 = RecurringTodo.find(1)
+    set_user_to_current_time_zone(recurring_todo_1.user)
     todo_1 = Todo.find_by_recurring_todo_id(1)
     today = Time.now.at_midnight
 
@@ -441,7 +451,7 @@ class TodosControllerTest < ActionController::TestCase
     recurring_todo_1.recurrence_selector = 0
     recurring_todo_1.every_other1 = today.day
     recurring_todo_1.every_other2 = 1
-    recurring_todo_1.save
+    assert recurring_todo_1.save
 
     # mark todo_1 as complete by toggle_check, this gets rid of todo_1 that was
     # not correctly created from the adjusted recurring pattern we defined
@@ -471,10 +481,8 @@ class TodosControllerTest < ActionController::TestCase
     # check that the new_todo is in the tickler to show next month
     assert !new_todo.show_from.nil?
 
-    # use Time.zone.local and not today+1.month because the latter messes up
-    # the timezone. 
-    next_month = Time.zone.local(today.year, today.month+1, today.day)
-    assert_equal next_month.to_s(:db), new_todo.show_from.to_s(:db)
+    next_month = today + 1.month
+    assert_equal next_month.utc.to_date.to_s(:db), new_todo.show_from.utc.to_date.to_s(:db)
   end
 
   def test_check_for_next_todo
@@ -524,5 +532,67 @@ class TodosControllerTest < ActionController::TestCase
     todo.reload()
     assert_equal "active", todo.state
   end
+  
+  def test_url_with_slash_in_query_string_are_parsed_correctly
+    # See http://blog.swivel.com/code/2009/06/rails-auto_link-and-certain-query-strings.html
+    login_as(:admin_user)
+    user = users(:admin_user)
+    todo = user.todos.first
+    url = "http://example.com/foo?bar=/baz"
+    todo.notes = "foo #{url} bar"
+    todo.save!
+    get :index
+    assert_select("a[href=#{url}]")
+  end
 
+  def test_format_note_normal
+    login_as(:admin_user)
+    todo = users(:admin_user).todos.first
+    todo.notes = "A normal description."
+    todo.save!
+    get :index
+    assert_select("div#notes_todo_#{todo.id}", "A normal description.")
+  end
+
+  def test_format_note_markdown
+    login_as(:admin_user)
+    todo = users(:admin_user).todos.first
+    todo.notes = "A *bold description*."
+    todo.save!
+    get :index
+    assert_select("div#notes_todo_#{todo.id}", "A bold description.")
+    assert_select("div#notes_todo_#{todo.id} strong", "bold description")
+  end
+
+  def test_format_note_link
+    login_as(:admin_user)
+    todo = users(:admin_user).todos.first
+    todo.notes = "A link to http://github.com/."
+    todo.save!
+    get :index
+    assert_select("div#notes_todo_#{todo.id}", 'A link to http://github.com/.')
+    assert_select("div#notes_todo_#{todo.id} a[href=http://github.com/]", 'http://github.com/')
+  end
+
+  def test_format_note_link_message
+    login_as(:admin_user)
+    todo = users(:admin_user).todos.first
+    todo.raw_notes = "A Mail.app message://<ABCDEF-GHADB-123455-FOO-BAR@example.com> link"
+    todo.save!
+    get :index
+    assert_select("div#notes_todo_#{todo.id}", 'A Mail.app message://&lt;ABCDEF-GHADB-123455-FOO-BAR@example.com&gt; link')
+    assert_select("div#notes_todo_#{todo.id} a", 'message://&lt;ABCDEF-GHADB-123455-FOO-BAR@example.com&gt;')
+    assert_select("div#notes_todo_#{todo.id} a[href=message://&lt;ABCDEF-GHADB-123455-FOO-BAR@example.com&gt;]", 'message://&lt;ABCDEF-GHADB-123455-FOO-BAR@example.com&gt;')
+  end
+
+  def test_format_note_link_onenote
+    login_as(:admin_user)
+    todo = users(:admin_user).todos.first
+    todo.notes = ' "link me to onenote":onenote:///E:\OneNote\dir\notes.one#PAGE&section-id={FD597D3A-3793-495F-8345-23D34A00DD3B}&page-id={1C95A1C7-6408-4804-B3B5-96C28426022B}&end'
+    todo.save!
+    get :index
+    assert_select("div#notes_todo_#{todo.id}", 'link me to onenote')
+    assert_select("div#notes_todo_#{todo.id} a", 'link me to onenote')
+    assert_select("div#notes_todo_#{todo.id} a[href=onenote:///E:\\OneNote\\dir\\notes.one#PAGE&amp;section-id={FD597D3A-3793-495F-8345-23D34A00DD3B}&amp;page-id={1C95A1C7-6408-4804-B3B5-96C28426022B}&amp;end]", 'link me to onenote')
+  end
 end

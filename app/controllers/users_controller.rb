@@ -27,16 +27,23 @@ class UsersController < ApplicationController
 
   # GET /users/new
   def new
+    @auth_types = []
+    unless session[:cas_user]
+      Tracks::Config.auth_schemes.each {|auth| @auth_types << [auth,auth]}
+    else
+      @auth_types << ['cas','cas']
+    end
+
     if User.no_users_yet?
-      @page_title = "TRACKS::Sign up as the admin user"
-      @heading = "Welcome to TRACKS. To get started, please create an admin account:"
+      @page_title = t('users.new_user_title')
+      @heading = t('users.first_user_heading')
       @user = get_new_user
-    elsif @user && @user.is_admin?
-      @page_title = "TRACKS::Sign up a new user"
-      @heading = "Sign up a new user:"
+    elsif (@user && @user.is_admin?) || SITE_CONFIG['open_signups']
+      @page_title = t('users.new_user_title')
+      @heading = t('users.new_user_heading')
       @user = get_new_user
     else # all other situations (i.e. a non-admin is logged in, or no one is logged in, but we have some users)
-      @page_title = "TRACKS::No signups"
+      @page_title = t('users.no_signups_title')
       @admin_email = User.find_admin.preference.admin_email
       render :action => "nosignup", :layout => "login"
       return
@@ -58,17 +65,32 @@ class UsersController < ApplicationController
     end
     respond_to do |format|
       format.html do
-        unless User.no_users_yet? || (@user && @user.is_admin?)
-          @page_title = "No signups"
+        unless User.no_users_yet? || (@user && @user.is_admin?) || SITE_CONFIG['open_signups']
+          @page_title = t('users.no_signups_title')
           @admin_email = User.find_admin.preference.admin_email
           render :action => "nosignup", :layout => "login"
           return
         end
-        
+
         user = User.new(params['user'])
+
+        if Tracks::Config.auth_schemes.include?('ldap') &&
+            user.auth_type == 'ldap' &&
+            !SimpleLdapAuthenticator.valid?(user.login, params['user']['password'])
+          notify :warning, "Incorrect password"
+          redirect_to :action => 'new'
+          return
+        end
+
+        if Tracks::Config.auth_schemes.include?('cas')
+          if user.auth_type.eql? "cas"
+             user.crypted_password = "cas"
+          end
+        end
+
         unless user.valid?
           session['new_user'] = user
-          redirect_to :action => 'new'
+          redirect_to signup_path
           return
         end
 
@@ -76,10 +98,10 @@ class UsersController < ApplicationController
         user.is_admin = true if first_user_signing_up
         if user.save
           @user = User.authenticate(user.login, params['user']['password'])
-          @user.create_preference
+          @user.create_preference({:locale => I18n.locale})
           @user.save
           session['user_id'] = @user.id if first_user_signing_up
-          notify :notice, "Signup successful for user #{@user.login}."
+          notify :notice, t('users.signup_successful', :username => @user.login)
           redirect_back_or_home
         end
         return
@@ -94,9 +116,12 @@ class UsersController < ApplicationController
           return
         end
         user = User.new(params[:request])
+        if Tracks::Config.auth_schemes.include?('cas')   && session[:cas_user]
+          user.auth_type = "cas" #if they area  cas user
+        end
         user.password_confirmation = params[:request][:password]
         if user.save
-          render :text => "User created.", :status => 200
+          render :text => t('users.user_created'), :status => 200
         else
           render_failure user.errors.to_xml
         end
@@ -114,9 +139,9 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html do
         if @saved
-          notify :notice, "Successfully deleted user #{@deleted_user.login}", 2.0
+          notify :notice, t('users.successfully_deleted_user', :username => @deleted_user.login), 2.0
         else
-          notify :error, "Failed to delete user #{@deleted_user.login}", 2.0
+          notify :error, t('users.failed_to_delete_user', :username => @deleted_user.login), 2.0
         end
         redirect_to users_url
       end
@@ -127,12 +152,12 @@ class UsersController < ApplicationController
   
     
   def change_password
-    @page_title = "TRACKS::Change password"
+    @page_title = t('users.change_password_title')
   end
   
   def update_password
     @user.change_password(params[:updateuser][:password], params[:updateuser][:password_confirmation])
-    notify :notice, "Password updated."
+    notify :notice, t('users.password_updated')
     redirect_to preferences_path
   rescue Exception => error
     notify :error, error.message
@@ -140,7 +165,7 @@ class UsersController < ApplicationController
   end
 
   def change_auth_type
-    @page_title = "TRACKS::Change authentication type"
+    @page_title = t('users.change_auth_type_title')
   end
   
   def update_auth_type
@@ -152,10 +177,10 @@ class UsersController < ApplicationController
           @user.auth_type = 'open_id'
           @user.open_id_url = identity_url
           if @user.save
-            notify :notice, "You have successfully verified #{identity_url} as your identity and set your authentication type to Open ID."
+            notify :notice, t('users.openid_url_verified', :url => identity_url)
           else
             debugger
-            notify :warning, "You have successfully verified #{identity_url} as your identity but there was a problem saving your authentication preferences."
+            notify :warning, t('users.openid_ok_pref_failed', :url => identity_url)
           end
           redirect_to preferences_path
         else
@@ -167,10 +192,10 @@ class UsersController < ApplicationController
     end
     @user.auth_type = params[:user][:auth_type]
     if @user.save
-      notify :notice, "Authentication type updated."
+      notify :notice, t('users.auth_type_updated')
       redirect_to preferences_path
     else
-      notify :warning, "There was a problem updating your authentication type: #{ @user.errors.full_messages.join(', ')}"
+      notify :warning, t('users.auth_type_update_error', :error_messages => @user.errors.full_messages.join(', '))
       redirect_to :action => 'change_auth_type'
     end
   end
@@ -178,7 +203,7 @@ class UsersController < ApplicationController
   def refresh_token
     @user.generate_token
     @user.save!
-    notify :notice, "New token successfully generated"
+    notify :notice, t('users.new_token_generated')
     redirect_to preferences_path
   end
   

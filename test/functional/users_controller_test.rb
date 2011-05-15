@@ -51,10 +51,10 @@ class UsersControllerTest < ActionController::TestCase
   
   def test_destroy_user
     login_as :admin_user
-    nr_users_before = User.find(:all).size
-    xhr :post, :destroy, :id => users(:ldap_user).id.to_param
-    assert_rjs :page, "user-3", :remove
-    assert_equal nr_users_before-1, User.find(:all).size
+    @no_users_before = User.find(:all).size
+    user_id = users(:ldap_user).id
+    xhr :post, :destroy, :id => user_id.to_param
+    assert_equal @no_users_before-1, User.find(:all).size
   end
   
   def test_update_password_successful
@@ -123,7 +123,7 @@ class UsersControllerTest < ActionController::TestCase
   
   def test_create_adds_a_user
     login_as :admin_user
-    assert_difference(User, :count) do
+    assert_difference 'User.count' do
       post :create, :user => {:login => 'newbie', :password => 'newbiepass', :password_confirmation => 'newbiepass'}
     end
   end
@@ -132,7 +132,7 @@ class UsersControllerTest < ActionController::TestCase
   # 
   def test_create_by_non_admin
     login_as :other_user
-    assert_no_difference(User, :count) do
+    assert_no_difference 'User.count' do
       post :create, :user => {:login => 'newbie2', :password => 'newbiepass2', :password_confirmation => 'newbiepass2'}
     end
     assert_response :success
@@ -145,7 +145,7 @@ class UsersControllerTest < ActionController::TestCase
   
   def test_create_with_invalid_password_does_not_add_a_new_user
     login_as :admin_user
-    assert_no_difference(User, :count) do
+    assert_no_difference 'User.count' do
       post :create, :user => {:login => 'newbie', :password => '', :password_confirmation => ''}
     end
   end
@@ -153,24 +153,24 @@ class UsersControllerTest < ActionController::TestCase
   def test_create_with_invalid_password_redirects_to_new_user_page
     login_as :admin_user
     post :create, :user => {:login => 'newbie', :password => '', :password_confirmation => ''}
-    assert_redirected_to :controller => 'users', :action => 'new'    
+    assert_redirected_to signup_path
   end
   
   def test_create_with_invalid_login_does_not_add_a_new_user
     login_as :admin_user
     post :create, :user => {:login => 'n', :password => 'newbiepass', :password_confirmation => 'newbiepass'}
-    assert_redirected_to :controller => 'users', :action => 'new'    
+    assert_redirected_to signup_path
   end
   
   def test_create_with_invalid_login_redirects_to_new_user_page
     login_as :admin_user
     post :create, :user => {:login => 'n', :password => 'newbiepass', :password_confirmation => 'newbiepass'}
-    assert_redirected_to :controller => 'users', :action => 'new'    
+    assert_redirected_to signup_path
   end
   
   def test_create_with_duplicate_login_does_not_add_a_new_user
     login_as :admin_user
-    assert_no_difference(User, :count) do
+    assert_no_difference 'User.count' do
       post :create, :user => {:login => 'jane', :password => 'newbiepass', :password_confirmation => 'newbiepass'}
     end
   end
@@ -178,7 +178,7 @@ class UsersControllerTest < ActionController::TestCase
   def test_create_with_duplicate_login_redirects_to_new_user_page
     login_as :admin_user
     post :create, :user => {:login => 'jane', :password => 'newbiepass', :password_confirmation => 'newbiepass'}
-    assert_redirected_to :controller => 'users', :action => 'new'    
+    assert_redirected_to signup_path
   end
   
 end
