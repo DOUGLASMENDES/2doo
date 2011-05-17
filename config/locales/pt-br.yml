@@ -20,123 +20,108 @@ pt-br:
         week_starts: "Início da semana"
         show_project_on_todo_done: "Go to project page on todo complete"
         refresh: "Intervalo de atualização (em minutos)"
-        mobile_todos_per_page: "Ações por página (Visão Mobile)"
-        sms_email: "E-mail do remetente"
+        mobile_todos_per_page: "ações por página (aplicação móvel)"
+        sms_email: "e-mail do remetente"
         sms_context: "Default email context"
-        show_hidden_projects_in_sidebar: "Exibir projetos ocultos na barra lateral"
-        show_hidden_contexts_in_sidebar: "Exibir contextos ocultos na barra lateral"
-        date_format: Formato da data
-        staleness_starts: "Start of staleness"
-        sms_context: Default email context
-        verbose_action_descriptors: "Verbose action descriptors"
-        mobile_todos_per_page: Ações por página (Visão Mobile)
-        show_number_completed: "Exibir número de ações completas"
-        title_date_format: "Formato do título da data"
-        refresh: Intervalo de atualização (em minutos)
-        week_starts: Início da semana
-        due_style: "Due style"
-        time_zone: "Fuso-horário"
-        locale: Local
-        sms_email: E-mail do remetente
-        show_project_on_todo_done: Go to project page on completing todo
-        show_completed_projects_in_sidebar: "Exibir projetos finalizados na barra lateral"
+        show_hidden_projects_in_sidebar: "exibir projetos ocultos na barra lateral"
+        show_hidden_contexts_in_sidebar: "exibir contextos ocultos na barra lateral"     
   time:
     formats:
       month_day: "%B %d"
   models:
     project:
-      feed_title: "Tracks Projects"
-      feed_description: "Lists all the projects for %{username}"
+      feed_title: "2doo - projetos"
+      feed_description: "listar todos os projetos para %{username}"
     preference:
-      due_styles: ['Due in ___ days', 'Due on _______']
-      due_on: "Due on %{date}"
-      due_in: "Due in %{days} days"
+      due_styles: ['termina em ___ dias', 'termina em _______']
+      due_on: "termina em %{date}"
+      due_in: "termina em %{days} dias"
     user:
-      error_context_not_associated: "Context id %{context} not associated with user id %{user}."
-      error_project_not_associated: "Project id %{project} not associated with user id %{user}."
+      error_context_not_associated: "id do contexto %{context} não associado com id do usuário %{user}."
+      error_project_not_associated: "id do projeto %{project} não associado com id do usuário %{user}."
     todo:
-      error_date_must_be_future: "must be a date in the future"
+      error_date_must_be_future: "deve ser uma data no futuro"
   common:
-    update: "Update"
-    logout: "Logout"
-    cancel: "Cancelar"
-    ok: "Ok"
-    add: "Add"
-    project: "Projeto"
-    projects: "Projetos"
-    context: "Contexto"
-    action: "Ação"
-    actions: "Ações"
-    server_error: "Um erro ocorreu no servidor."
-    contexts: "Contextos"
-    numbered_step: "Passo %{number}"
-    errors_with_fields: "Ocorreram problemas com os seguintes campos:"
-    back: "Voltar"
-    create: "Criar"
-    go_back: "Voltar"
-    search: "Pesquisar"
-    none: "Nenhum"
-    description: "Descrição"
-    notes: "Notas"
+    update: "atualizar"
+    logout: "sair"
+    cancel: "cancelar"
+    ok: "ok"
+    add: "add"
+    project: "projeto"
+    projects: "projetos"
+    context: "contexto"
+    action: "ação"
+    actions: "ações"
+    server_error: "ooops! ocorreu um erro no servidor, desculpe!"
+    contexts: "contextos"
+    numbered_step: "passo %{number}"
+    errors_with_fields: "ocorreram problemas nos seguintes campos:"
+    back: "voltar"
+    create: "criar"
+    go_back: "voltar"
+    search: "procurar"
+    none: "nada"
+    description: "descrição"
+    notes: "anotações"
     optional: "opcional"
-    ajaxError: 'There was an error retrieving from server'
+    ajaxError: "ooops! ocorreu um erro no servidor, desculpe!"
     sort:
-      sort: "Ordenar"
-      alphabetically: "Alphabetically"
-      alphabetically_title: "Sort projects alphabetically"
-      alphabetically_confirm: "Are you sure that you want to sort these projects alphabetically? This will replace the existing sort order."
-      by_task_count: "By number of tasks"
-      by_task_count_title: "Sort by number of tasks"
-      by_task_count_title_confirm: "Are you sure that you want to sort these projects by the number of tasks? This will replace the existing sort order."
-    drag_handle: DRAG
-    bugs: Bugs
-    forum: Forum
-    wiki: Wiki
-    email: Email
-    website: Website
-    contribute: Contribuir
-    first: Primeiro
-    second: Segundo
-    third: Terceiro
-    forth: Quarto
-    fourth: Fourth
-    last: Último
+      sort: "ordenar"
+      alphabetically: "em ordem alfabética"
+      alphabetically_title: "ordenar projetos por ordem alfabética"
+      alphabetically_confirm: "tem certeza que você quer ordenar estes projetos por ordem alfabética? (isso vai substituir a ordem existente)"
+      by_task_count: "por número de tarefas"
+      by_task_count_title: "ordenar por número de tarefas"
+      by_task_count_title_confirm: "tem certeza que você quer ordenar estes projetos pelo número de tarefas? (isso vai substituir a ordem existente)"
+    drag_handle: arrastar
+    bugs: bugs
+    forum: forum
+    wiki: wiki
+    email: email
+    website: website
+    contribute: contribuir
+    first: primeiro
+    second: segundo
+    third: terceiro
+    forth: quarto
+    fourth: quinto
+    last: último
     month: mês
     months: meses
     week: semana
     weeks: semanas
   errors:
-    user_unauthorized: "401 Não autorizado: Apenas administradores possuem acesso à esta função."
+    user_unauthorized: "oops! não autorizado! apenas administradores tem acesso à isso, desculpe!"
   footer:
-    send_feedback: Send feedback on %{version}
+    send_feedback: enviar feedback da versão %{version}
   contexts:
-    status_hidden: "Contexto está oculto"
-    status_active: "Contexto está ativo"
-    no_actions: "Currently there are no incomplete actions in this context"
-    context_name: "Nome do Contexto"
-    update_status_message: "Name of context was changed"
-    save_status_message: "Context saved"
-    last_completed_in_context: "in this context (last %{number})"
-    add_context: "Add Context"
-    context_hide: "Hide from front page?"
-    hide_form: "Hide form"
-    hide_form_title: "Hide new context form"
-    show_form: "Create a new context"
-    show_form_title: "Add a context"
-    visible_contexts: "Visible contexts"
-    hidden_contexts: "Hidden contexts"
-    context_deleted: "Deleted context '%{name}'"
-    no_contexts_hidden: "Currently there are no hidden contexts"
-    no_contexts_active: "Currently there are no active contexts"
-    delete_context: "Delete context"
-    delete_context_title: "Delete context"
-    delete_context_confirmation: "Are you sure that you want to delete the context '%{name}'? Be aware that this will also delete all (repeating) actions in this context!"
-    new_context_pre: "New context '"
-    new_context_post: "' will be also created. Are you sure?"
-    edit_context: "Edit context"
+    status_hidden: "contexto está oculto"
+    status_active: "contexto está ativo"
+    no_actions: "atualmente não há ações incompletas neste contexto"
+    context_name: "nome do contexto"
+    update_status_message: "o nome do contexto mudou!"
+    save_status_message: "contexto salvo!"
+    last_completed_in_context: "neste contexto (last %{number})"
+    add_context: "add contexto"
+    context_hide: "esconder da página principal?"
+    hide_form: "esconder formulário"
+    hide_form_title: "esconder formulário de novo contexto"
+    show_form: "criar novo contexto"
+    show_form_title: "adicionar um contexto"
+    visible_contexts: "contexto visíveis"
+    hidden_contexts: "esconder contextos"
+    context_deleted: "contexto apagado '%{name}'"
+    no_contexts_hidden: "atualmente não há contextos escondidos"
+    no_contexts_active: "atualmente não há contextos ativos"
+    delete_context: "apagar contexto"
+    delete_context_title: "apagar contexto"
+    delete_context_confirmation: "tem certeza que você quer deletar o contexto '%{name}'? isso também vai deletar as ações dentro deste contexto! cuidado!"
+    new_context_pre: "novo contexto '"
+    new_context_post: "' ´também será criado. tem certeza?"
+    edit_context: "editar contexto"
   data:
-    import_errors: "Some errors occurred during import"
-    import_successful: "Import was successful."
+    import_errors: "ooops! alguns erros ocorreram durante a importação, droga!"
+    import_successful: "a importação foi realizada com sucesso! uhul!"
   feedlist:
     legend: "Legend:"
     rss_feed: "RSS Feed"
