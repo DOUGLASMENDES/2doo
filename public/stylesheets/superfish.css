@@ -76,8 +76,8 @@ ul.sf-menu li li li.sfHover ul {
     font-weight: bold;
     margin-left: 10px;
     text-decoration: none;
-    color: #eee;
-    border-bottom: 4px solid #000;  /* make sure there is enough room for the solid */
+    color: green;
+    border-bottom: 4px solid tranparent;  /* make sure there is enough room for the solid */
 }
 
 .sf-item-menu a, .sf-item-menu a:visited, .sf-item-menu ul li a {
@@ -89,7 +89,7 @@ ul.sf-menu li li li.sfHover ul {
 
 .sf-menu li li, .sf-menu li ul {
     margin: 0;
-	background:		#000000;
+	background:	#000000;
 }
 
 .sf-item-menu li li, .sf-item-menu li ul {
@@ -124,12 +124,12 @@ ul.sf-menu li li li.sfHover ul {
 }
 
 .sf-menu li li li {
-	background:		#000000;
+	background:#000000;
 }
 
 .sf-menu li:hover, .sf-menu li.sfHover,
 .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
-    color: #CCC;
+    color: #000;
 }
 
 .sf-item-menu li:hover, .sf-item-menu li.sfHover,
@@ -139,7 +139,7 @@ ul.sf-menu li li li.sfHover ul {
 }
 
 .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
-    border-bottom: 4px solid #CCC;
+    border-bottom: 4px solid #000;
     background: transparent;
 }
 

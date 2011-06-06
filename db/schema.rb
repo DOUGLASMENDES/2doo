@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 46) do
+ActiveRecord::Schema.define(:version => 20110104200112) do
 
   create_table "contexts", :force => true do |t|
     t.string   "name",                          :null => false
@@ -22,6 +22,12 @@ ActiveRecord::Schema.define(:version => 46) do
 
   add_index "contexts", ["user_id", "name"], :name => "index_contexts_on_user_id_and_name"
   add_index "contexts", ["user_id"], :name => "index_contexts_on_user_id"
+
+  create_table "dependencies", :force => true do |t|
+    t.integer "successor_id",      :null => false
+    t.integer "predecessor_id",    :null => false
+    t.string  "relationship_type"
+  end
 
   create_table "notes", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -68,6 +74,7 @@ ActiveRecord::Schema.define(:version => 46) do
     t.integer "mobile_todos_per_page",                            :default => 6,                              :null => false
     t.string  "sms_email"
     t.integer "sms_context_id"
+    t.string  "locale"
   end
 
   add_index "preferences", ["user_id"], :name => "index_preferences_on_user_id"
@@ -82,6 +89,7 @@ ActiveRecord::Schema.define(:version => 46) do
     t.datetime "updated_at"
     t.integer  "default_context_id"
     t.datetime "completed_at"
+    t.string   "default_tags"
   end
 
   add_index "projects", ["user_id", "name"], :name => "index_projects_on_user_id_and_name"
@@ -113,6 +121,7 @@ ActiveRecord::Schema.define(:version => 46) do
     t.datetime "completed_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "show_always"
   end
 
   add_index "recurring_todos", ["state"], :name => "index_recurring_todos_on_state"
@@ -161,6 +170,7 @@ ActiveRecord::Schema.define(:version => 46) do
 
   add_index "todos", ["context_id"], :name => "index_todos_on_context_id"
   add_index "todos", ["project_id"], :name => "index_todos_on_project_id"
+  add_index "todos", ["state"], :name => "index_todos_on_state"
   add_index "todos", ["user_id", "context_id"], :name => "index_todos_on_user_id_and_context_id"
   add_index "todos", ["user_id", "project_id"], :name => "index_todos_on_user_id_and_project_id"
   add_index "todos", ["user_id", "state"], :name => "index_todos_on_user_id_and_state"

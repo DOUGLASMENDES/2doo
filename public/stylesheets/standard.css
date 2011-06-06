@@ -31,11 +31,12 @@ abbr,acronym { border:0;
 }
 
 body {
-    font-family: "Lucida Grande", Verdana, Geneva, Arial, sans-serif;
-    font-size: 80%;
+    font-family: Arial, Verdana;
+    font-size: 100%;
+	src: url('http://fonts.googleapis.com/css?family=Nunito');
     padding: 0px 10px;
     margin: 0px;
-    background: #eee;
+    background: #fff;
 }
 
 p {
@@ -45,7 +46,7 @@ p {
 }
 
 a, a:link, a:active, a:visited {
-    color: #cc3334;
+    color: green;
     text-decoration: none;
     padding-left: 1px;
     padding-right: 1px;
@@ -53,7 +54,7 @@ a, a:link, a:active, a:visited {
 
 a:hover {
     color: #fff;
-    background-color: #cc3334;
+    background-color: green;
 } 
 
 h1 {
@@ -246,17 +247,17 @@ body.preferences select#prefs_time_zone, body.preferences select#prefs_sms_conte
     font-weight: bold;
     margin: 0 10px 4px 10px;
     text-decoration: none;
-    color: #eee;
+    color: black;
 }
 
 #navlist a:link#current, #navlist a:visited#current, #navlist a:hover {
-    border-bottom: 4px solid #CCC;
+    border-bottom: 4px solid green;
     padding-bottom: 2px;
     background: transparent;
-    color: #CCC;
+    color: black;
 }
 
-#navlist a:hover { color: #CCC; }
+#navlist a:hover { color: black; }
 
 #topbar {
     position: fixed;
@@ -265,10 +266,11 @@ body.preferences select#prefs_time_zone, body.preferences select#prefs_sms_conte
     height: 68px;
     margin-bottom: 20px;
     clear: both;
-    background-color: #000;
-    color: #eee;
+    background-color:#EEFFEE;
+    color: green;
     width: 100%;
     z-index:501;
+	text-decoration: none;
 }
 
 #date {
@@ -292,10 +294,10 @@ body.preferences select#prefs_time_zone, body.preferences select#prefs_sms_conte
 }
 
 .container {
-    padding: 0px 5px 0px 5px; 
+    border-radius: 10px;
+	padding: 0px 5px 0px 5px; 
     border: 1px solid #999;
-    margin: 0px 0px 15px 0px;
-    background: #fff; 
+    margin: 0px 0px 15px 0px;    
 }
 
 .completed {
@@ -303,13 +305,14 @@ body.preferences select#prefs_time_zone, body.preferences select#prefs_sms_conte
 }
 
 .container h2 {
-    background: #ccc;
+    border-radius: 10px;
+	background: transparent;
     padding: 5px;
     margin-top: 0px;
     margin-left: -5px;
     margin-right: -5px;
     margin-bottom: 0px;      
-    color: #666;
+    color: black;
     position:static;  
 }
 
@@ -565,6 +568,7 @@ span.tag {
     color: #000;
     padding: 1px;
     margin-right: 2px;
+	border-radius: 7px;
 }
 
 span.tag a, 
@@ -577,6 +581,7 @@ span.tag a:visited {
 span.tag a:hover {
     background-color: #99CCFF;
     color: #333;
+	border-radius: 7px;
 }
 
 /* Flash box styling */
@@ -628,35 +633,40 @@ Same format as traffic lights */
     color: #fff;
     background: #f00;
     padding: 1px;
-    font-size: 85%;
+    font-size: 75%;
+	border-radius: 10px;
 }
 
 .amber {
     color: #fff;
     background: #ff6600;
     padding: 1px;
-    font-size: 85%;
+    font-size: 75%;
+	border-radius: 10px;
 }
 
 .orange {
     color: #fff;
     background: #FFA500;
     padding: 1px;
-    font-size: 85%;
+    font-size: 75%;
+	border-radius: 10px;
 }
 
 .green {
     color: #fff;
     background: #33cc00;
-    padding: 1px;
-    font-size: 85%;
+    padding: 2px;
+    font-size: 75%;
+	border-radius: 10px;
 }
 
 .grey {
     color: #fff;
     background: #999;
     padding: 2px;
-    font-size: 85%;
+    font-size: 75%;
+	border-radius: 10px;
 }
 
 .info {
@@ -690,11 +700,12 @@ The colour of the background gets progressively yellower with age */
 /* Shows the number of undone next action */
 .badge {
     color: #fff;
-    background: #f00;
+    background: green;
     padding: 3px 5px;
-    font-size: 12pt;
+    font-size: 14pt;
     margin: 10px 10px 0px 0px;
     height:26px;
+	border-radius: 15px;
 }
 
 ul {
@@ -843,8 +854,8 @@ form {
     background: #ddd;
     width: 270px;
     padding: 5px 10px;
-    background-color: #000;
-    color: #eee;
+    background-color: #F2F2F2;
+    color: #424242;
 }
 
 #recurring_new_container img {
