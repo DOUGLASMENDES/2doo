@@ -46,7 +46,7 @@ p {
 }
 
 a, a:link, a:active, a:visited {
-    color:#33CC00;
+    color:#6b9845;
     text-decoration: none;
     padding-left: 1px;
     padding-right: 1px;
@@ -265,7 +265,7 @@ body.preferences select#prefs_time_zone, body.preferences select#prefs_sms_conte
     height: 68px;
     margin-bottom: 20px;
     clear: both;
-    background-color:#556B2F;
+    background-color:#6d983b;
     color: white;
     width: 100%;
     z-index:501;
@@ -700,12 +700,11 @@ The colour of the background gets progressively yellower with age */
 .badge {
     color:white;
     background-color:red;
-    padding: 3px 5px;
+    padding: 0px 8px;
     font-size: 15pt;
 	font-weight:bold;
     margin: 10px 10px 0px 0px;
-    height:26px;
-	border-radius: 15px;
+    height:26px;	
 }
 
 ul {
@@ -741,9 +740,10 @@ li {
 }
 
 .edit-form {
-    background-color:transparent;
+    background-color:#f0f4ed;
     padding: 0 10px;        
-    position:relative;	
+    position:relative;
+	
 }
 
 /* Right align labels in forms */
@@ -755,8 +755,8 @@ li {
 input {
     vertical-align: middle;
 	border-radius:5px;
-	border:solid 1px transparent;
-	background-color:#C6D880;
+	border:solid 1px #cdd8bd;
+	background-color:white;
 }
 
 /* Positioning the 'cells' in the list */
@@ -853,12 +853,10 @@ form {
     width: 13ex;
 }
 #todo_new_action_container, #project_new_project_container, #context_new_container, #recurring_new_container {
-    background: #ddd;
     width: 270px;
     padding: 5px 10px;
-    background-color:#eafad5;
-    color:#498111;
-		
+    background-color:#f0f4ed;
+    color:#000000;		
 }
 
 #recurring_new_container img {
@@ -944,12 +942,14 @@ form.button-to {
 }
 
 label {
-    font-weight: bold;
+    font-weight: normal;
     padding: 0px 0px;
 }
 
 input, select, textarea {
     margin: 0px 0px 5px 0px;
+	padding: 5px 3px 5px 3px;
+	font-size: 12px;
 }
 
 #feedicons-project, #feedicons-context {
