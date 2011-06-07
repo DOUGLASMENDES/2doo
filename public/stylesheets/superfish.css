@@ -76,14 +76,14 @@ ul.sf-menu li li li.sfHover ul {
     font-weight: bold;
     margin-left: 10px;
     text-decoration: none;
-    color: green;
+    color: white;
     border-bottom: 4px solid tranparent;  /* make sure there is enough room for the solid */
 }
 
 .sf-item-menu a, .sf-item-menu a:visited, .sf-item-menu ul li a {
     font-weight: normal;
     line-height: 10px;
-    color: #000;
+    color: white;
     border-bottom: none;
 }
 
@@ -129,7 +129,7 @@ ul.sf-menu li li li.sfHover ul {
 
 .sf-menu li:hover, .sf-menu li.sfHover,
 .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
-    color: #000;
+    color: white;
 }
 
 .sf-item-menu li:hover, .sf-item-menu li.sfHover,
@@ -139,7 +139,7 @@ ul.sf-menu li li li.sfHover ul {
 }
 
 .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
-    border-bottom: 4px solid #000;
+    border-bottom: 2px solid white;
     background: transparent;
 }
 

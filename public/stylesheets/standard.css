@@ -33,7 +33,7 @@ abbr,acronym { border:0;
 body {
     font-family: Arial, Verdana;
     font-size: 100%;
-	src: url('http://fonts.googleapis.com/css?family=Nunito');
+	'src: url('http://fonts.googleapis.com/css?family=Nunito');
     padding: 0px 10px;
     margin: 0px;
     background: #fff;
@@ -46,15 +46,14 @@ p {
 }
 
 a, a:link, a:active, a:visited {
-    color: green;
+    color:#33CC00;
     text-decoration: none;
     padding-left: 1px;
     padding-right: 1px;
 }
 
 a:hover {
-    color: #fff;
-    background-color: green;
+    text-decoration:underline;    
 } 
 
 h1 {
@@ -266,8 +265,8 @@ body.preferences select#prefs_time_zone, body.preferences select#prefs_sms_conte
     height: 68px;
     margin-bottom: 20px;
     clear: both;
-    background-color:#C2FFC2;
-    color: green;
+    background-color:#556B2F;
+    color: white;
     width: 100%;
     z-index:501;
 	text-decoration: none;
@@ -296,7 +295,7 @@ body.preferences select#prefs_time_zone, body.preferences select#prefs_sms_conte
 .container {
     border-radius: 10px;
 	padding: 0px 5px 0px 5px; 
-    border: 2px solid green;
+    border: 0px solid #999;
     margin: 0px 0px 15px 0px;    
 }
 
@@ -312,7 +311,7 @@ body.preferences select#prefs_time_zone, body.preferences select#prefs_sms_conte
     margin-left: -5px;
     margin-right: -5px;
     margin-bottom: 0px;      
-    color: black;
+    color:#AAAAAA;
     position:static;  
 }
 
@@ -564,7 +563,7 @@ a.footer_link:hover {color: #fff; background-color: #cc3334 !important;}
 
 span.tag {
     font-size: 0.8em;
-    background-color: #CCE7FF;
+    background-color:#C2FFC2;
     color: #000;
     padding: 1px;
     margin-right: 2px;
@@ -579,7 +578,7 @@ span.tag a:visited {
 }
 
 span.tag a:hover {
-    background-color: #99CCFF;
+    background-color:#90EE90;
     color: #333;
 	border-radius: 7px;
 }
@@ -699,10 +698,11 @@ The colour of the background gets progressively yellower with age */
 
 /* Shows the number of undone next action */
 .badge {
-    color: #fff;
-    background: green;
+    color:white;
+    background-color:red;
     padding: 3px 5px;
-    font-size: 14pt;
+    font-size: 15pt;
+	font-weight:bold;
     margin: 10px 10px 0px 0px;
     height:26px;
 	border-radius: 15px;
@@ -741,20 +741,22 @@ li {
 }
 
 .edit-form {
-    background: #ccc;
-    padding: 0 10px;
-    border-top: 1px solid #999;
-    border-bottom: 1px solid #999;
-    position:relative;
+    background-color:transparent;
+    padding: 0 10px;        
+    position:relative;	
 }
 
 /* Right align labels in forms */
 .label {
     text-align: right;
+	border:solid 1px green;
 }
 
 input {
     vertical-align: middle;
+	border-radius:5px;
+	border:solid 1px transparent;
+	background-color:#C6D880;
 }
 
 /* Positioning the 'cells' in the list */
@@ -854,10 +856,9 @@ form {
     background: #ddd;
     width: 270px;
     padding: 5px 10px;
-    background-color:#C2FFC2;
-    color:black;
-	border-radius:15px;
-	border: 5px dotted green;
+    background-color:#eafad5;
+    color:#498111;
+		
 }
 
 #recurring_new_container img {
